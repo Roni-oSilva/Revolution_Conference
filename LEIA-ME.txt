@@ -1,0 +1,99 @@
+APAIXONADOS PELA PRESENCA — 17 e 18 de outubro de 2026
+Site da conferencia · Revolucao Jovem Teen
+
+====================================================
+O QUE TEM NESTA PASTA
+====================================================
+
+index.html      O site inteiro em um unico arquivo (fontes, logo,
+                video da pomba, estilos e codigo ja embutidos).
+videos/         Os quatro videos dos ministrantes:
+                  luciana.mp4    Pra. Luciana Gineli
+                  fazola.mp4     Pr. Guilherme Fazola
+                  ezeuiqsd.mp4   Ezequias Sousa
+                  tiago.mp4      Pr. Tiago
+
+REGRA IMPORTANTE: o index.html e a pasta videos precisam ficar
+sempre juntos, no mesmo nivel. Nao renomeie a pasta videos nem os
+arquivos .mp4 — se mudar o nome, os videos dos cards param de
+aparecer.
+
+====================================================
+VER NO COMPUTADOR (SEM INTERNET)
+====================================================
+
+Descompacte o zip e clique duas vezes em index.html.
+Funciona offline, com uma excecao: o mapa da secao "Onde vai ser?"
+e carregado do Google, entao ele so aparece com internet. O pin e
+o link para o Google Maps continuam funcionando.
+
+====================================================
+PUBLICAR ONLINE — OPCAO MAIS RAPIDA (NETLIFY, GRATIS)
+====================================================
+
+1. Descompacte o zip no computador.
+2. Abra https://app.netlify.com/drop no navegador.
+3. Arraste a PASTA descompactada (a que contem o index.html)
+   para dentro da area indicada na pagina.
+4. Aguarde o upload. Ao terminar, o Netlify mostra um endereco
+   do tipo https://nome-aleatorio.netlify.app — o site ja esta no ar.
+5. Para trocar o endereco: menu "Site configuration" >
+   "Change site name". Para usar um dominio proprio:
+   "Domain management" > "Add a domain".
+
+Nao precisa criar conta para testar, mas criando uma (e-mail ou
+Google) o site fica salvo e voce pode atualizar depois.
+
+====================================================
+PUBLICAR EM HOSPEDAGEM PROPRIA (HOSTINGER, LOCAWEB, CPANEL)
+====================================================
+
+1. Entre no gerenciador de arquivos ou em um programa de FTP
+   (FileZilla).
+2. Abra a pasta public_html (ou www).
+3. Envie o index.html e a pasta videos inteira para dentro dela.
+4. Acesse seu dominio. O index.html e carregado automaticamente.
+
+====================================================
+LINKS QUE O SITE USA
+====================================================
+
+Inscricao (Google Forms):
+https://docs.google.com/forms/d/e/1FAIpQLSdSLltisaiLtvel6ZGcKl_bsKxTRU2kKCywtRL1rT-Mx5uwzQ/viewform?usp=header
+
+Local no Google Maps:
+https://maps.app.goo.gl/LoXn4RQLgbhMiCGQ7
+R. Dom Teresa Cristina, 135 · Centro, Ulianopolis — PA
+
+Instagram do evento:
+https://www.instagram.com/revolucaojovemiep/
+
+Todos abrem em nova aba. Para trocar qualquer um deles e preciso
+editar o arquivo de origem do projeto e gerar este pacote de novo.
+
+====================================================
+SE ALGO NAO FUNCIONAR
+====================================================
+
+Os videos dos ministrantes nao aparecem
+  A pasta videos nao subiu junto, ou foi renomeada. Confira se ela
+  esta no mesmo lugar que o index.html e com os nomes originais.
+
+O mapa aparece em branco
+  Falta internet, ou a rede bloqueia o Google Maps. O botao
+  "ABRIR NO MAPA" funciona de qualquer forma.
+
+O site demora para abrir no celular
+  Sao cerca de 42 MB no total (site + videos). No primeiro acesso
+  em rede movel a carga e lenta; depois fica em cache. Se for um
+  problema para o seu publico, os videos podem ser comprimidos.
+
+A pomba nao se move ao rolar a pagina
+  Verifique se o navegador esta atualizado. Em celulares com
+  economia de bateria ou "reduzir movimento" ativado, as animacoes
+  sao desligadas de proposito pelo sistema.
+
+====================================================
+
+Desenvolvido por @carvex_lab
+https://www.instagram.com/carvex_lab
