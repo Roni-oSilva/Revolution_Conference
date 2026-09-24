@@ -1,0 +1,20 @@
+{
+  "name": "revolution-conference",
+  "version": "1.0.0",
+  "description": "Apaixonados pela Presença - Conferência Revolução Jovem Teen 2026",
+  "type": "module",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'Static site - no build required'",
+    "lint": "echo 'No linting configured for static HTML'"
+  },
+  "keywords": [
+    "conference",
+    "static-site"
+  ],
+  "author": "@carvex_lab",
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
