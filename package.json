@@ -1,0 +1,27 @@
+{
+  "name": "revolution-conference",
+  "version": "1.0.0",
+  "description": "Apaixonados pela Presença - Conference Website",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"No tests configured\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Roni-oSilva/Revolution_Conference.git"
+  },
+  "keywords": [
+    "conference",
+    "website",
+    "vercel-analytics"
+  ],
+  "author": "@carvex_lab",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Roni-oSilva/Revolution_Conference/issues"
+  },
+  "homepage": "https://github.com/Roni-oSilva/Revolution_Conference#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
