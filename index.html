@@ -393,5 +393,11 @@ document.addEventListener('DOMContentLoaded', async function() {
 <script 
   defer 
   src="/_vercel/insights/script.js"
-></script></body>
+></script>
+<script type="module">
+  // Vercel Web Analytics - tracks page views and user interactions
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/web-analytics/script.js"></script>
+</body>
 </html>
