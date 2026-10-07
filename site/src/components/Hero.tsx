@@ -1,11 +1,9 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 
-const LINES = [
-  { text: "APAIXONADOS", dir: -1 },
-  { text: "PELA", dir: 1 },
-  { text: "PRESENÇA", dir: -1 },
-];
+const PRE = { lines: ["APAIXONADOS", "PELA", "PRESENÇA"], title: ["Apaixonados", "pela Presença"], sub: "17 E 18 DE OUTUBRO · ULIANÓPOLIS — PA" };
+const POST = { lines: ["VIVEMOS", "ISSO."], title: ["Vivemos isso."], sub: "APAIXONADOS PELA PRESENÇA · 2026" };
+export const HERO_COPY = { pre: PRE, post: POST };
 
 function Ornament() {
   const petals = Array.from({ length: 48 }, (_, i) => i * (360 / 48));
@@ -29,7 +27,7 @@ function Ornament() {
   );
 }
 
-export function Hero() {
+export function Hero({ copy = PRE }: { copy?: typeof PRE }) {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress: p } = useScroll({ target: ref, offset: ["start start", "end end"] });
@@ -39,11 +37,9 @@ export function Hero() {
   const circleY = useTransform(p, [0, 1], ["0vh", reduce ? "0vh" : "80vh"]);
   const titleOpacity = useTransform(p, [0, 0.45], [1, 0]);
   const titleY = useTransform(p, [0, 0.45], ["0vh", "6vh"]);
-  const lineX = [
-    useTransform(p, [0, 1], ["0vw", "-55vw"]),
-    useTransform(p, [0, 1], ["0vw", "55vw"]),
-    useTransform(p, [0, 1], ["0vw", "-55vw"]),
-  ];
+  const left = useTransform(p, [0, 1], ["0vw", "-55vw"]);
+  const right = useTransform(p, [0, 1], ["0vw", "55vw"]);
+  const LINES = copy.lines.map((text, i) => ({ text, x: i % 2 === 0 ? left : right }));
 
   return (
     <section ref={ref} className="relative h-[260vh]" aria-label="Apaixonados pela Presença">
@@ -53,10 +49,10 @@ export function Hero() {
       >
         {/* nomes gigantes — cada linha segue para um lado */}
         <div className="absolute inset-0 z-0 flex flex-col items-center justify-center leading-[0.82]">
-          {LINES.map((l, i) => (
+          {LINES.map((l) => (
             <motion.span
               key={l.text}
-              style={{ x: lineX[i] }}
+              style={{ x: l.x }}
               className="font-display whitespace-nowrap text-[26vw] text-black/80 md:text-[19vw]"
             >
               {l.text}
@@ -85,12 +81,11 @@ export function Hero() {
           style={{ opacity: titleOpacity, y: titleY }}
           className="absolute inset-x-0 top-[60%] z-30 text-center font-display text-[11vw] leading-[0.9] text-[#fff1e6] drop-shadow-[0_4px_18px_rgba(0,0,0,.55)] md:text-[6vw]"
         >
-          <span className="block">Apaixonados</span>
-          <span className="block">pela Presença</span>
+          {copy.title.map((t) => <span key={t} className="block">{t}</span>)}
         </motion.h1>
 
         <p className="absolute inset-x-0 bottom-6 z-30 text-center text-sm tracking-[0.3em] text-[#fff1e6]/80">
-          17 E 18 DE OUTUBRO · ULIANÓPOLIS — PA
+          {copy.sub}
         </p>
       </div>
     </section>
