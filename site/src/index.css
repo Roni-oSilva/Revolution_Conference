@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-display: "UnifrakturCook", "Grenze Gotisch", serif;
+  --font-body: "Grenze Gotisch", "UnifrakturCook", serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-ring: var(--ring);
+}
+
+:root {
+  --background: #120605;
+  --foreground: #f6e9dc;
+  --card: #2a0c09;
+  --card-foreground: #f6e9dc;
+  --muted: #1d0907;
+  --ring: #ff5a3c;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+}
+h1, h2, h3, .font-display { font-family: var(--font-display); font-weight: 400; }
