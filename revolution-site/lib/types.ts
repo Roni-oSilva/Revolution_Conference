@@ -22,6 +22,9 @@ export interface VideoRow {
   id: string; title: string; description: string; category: string; youtube_id: string; url: string; position: number;
   is_published: boolean; availability: Availability; checked_at: string | null; created_at: string;
 }
+export interface ScheduleRow {
+  id: string; day_label: string; time_label: string; title: string; description: string; position: number; is_published: boolean; created_at: string;
+}
 export interface WallPostRow {
   id: string; title: string; body: string; image_media_id: string | null; position: number; status: PostStatus;
   is_highlight: boolean; published_at: string | null; created_at: string; updated_at: string;

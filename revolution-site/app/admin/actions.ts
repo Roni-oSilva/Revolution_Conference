@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { createSessionClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { requireAdmin } from '@/lib/admin/auth';
-import { eventSchema, formToObject, inviteSchema, mediaEditSchema, mediaSchema, postSchema, securitySchema, siteSchema, streamSchema, videoEditSchema, videoSchema } from '@/lib/admin/schemas';
+import { eventSchema, formToObject, inviteSchema, mediaEditSchema, mediaSchema, postSchema, scheduleSchema, securitySchema, siteSchema, streamSchema, videoEditSchema, videoSchema } from '@/lib/admin/schemas';
 import { parseDriveUrl, parseYouTube } from '@/lib/urls';
 import { checkDriveImage, checkYouTubeVideo, type Availability } from '@/lib/availability';
 import { zonedLocalToUtcMs } from '@/lib/tz';
@@ -116,7 +116,7 @@ export async function deletePostAction(fd: FormData) {
 }
 
 /** Reordena trocando `position` com o vizinho (lista já ordenada por position). */
-async function moveGeneric(table: 'wall_posts' | 'media' | 'videos', fd: FormData, path: string) {
+async function moveGeneric(table: 'wall_posts' | 'media' | 'videos' | 'schedule_items', fd: FormData, path: string) {
   const { client } = await requireAdmin();
   const id = String(fd.get('id') ?? ''); const dir = fd.get('dir') === 'up' ? -1 : 1;
   const { data, error } = await client.from(table).select('id, position').order('position').order('created_at', { ascending: false });
@@ -249,4 +249,30 @@ export async function setAdminRoleAction(fd: FormData) {
   const { error } = await client.from('admin_users').update({ role }).eq('user_id', String(fd.get('user_id') ?? ''));
   if (error) return back('/admin/seguranca', dbCode(error));
   back('/admin/seguranca', 'saved');
+}
+
+
+// ───────────────────────── Programação dos dias ─────────────────────────
+export async function addScheduleAction(fd: FormData) {
+  const { client } = await requireAdmin();
+  const p = scheduleSchema.safeParse({ ...formToObject(fd), position: 9999, is_published: 'on' });
+  if (!p.success) return back('/admin/programacao', 'validation');
+  const { error } = await client.from('schedule_items').insert(p.data);
+  if (error) return back('/admin/programacao', dbCode(error));
+  refresh(); back('/admin/programacao', 'created');
+}
+export async function updateScheduleAction(fd: FormData) {
+  const { client } = await requireAdmin();
+  const p = scheduleSchema.safeParse(formToObject(fd));
+  if (!p.success) return back('/admin/programacao', 'validation');
+  const { error } = await client.from('schedule_items').update(p.data).eq('id', String(fd.get('id') ?? ''));
+  if (error) return back('/admin/programacao', dbCode(error));
+  refresh(); back('/admin/programacao', 'saved');
+}
+export async function moveScheduleAction(fd: FormData) { return moveGeneric('schedule_items', fd, '/admin/programacao'); }
+export async function deleteScheduleAction(fd: FormData) {
+  const { client } = await requireAdmin();
+  const { error } = await client.from('schedule_items').delete().eq('id', String(fd.get('id') ?? ''));
+  if (error) return back('/admin/programacao', dbCode(error));
+  refresh(); back('/admin/programacao', 'deleted');
 }

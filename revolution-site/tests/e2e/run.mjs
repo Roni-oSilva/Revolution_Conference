@@ -51,7 +51,7 @@ const noProblems = (page) => eq(page.problems, [], 'erros de console/página (in
 async function reset() {
   control.down = false; control.authFail = false;
   await db.exec(`
-    delete from public.post_reactions; delete from public.rate_limits; delete from public.wall_posts; delete from public.media; delete from public.videos;
+    delete from public.post_reactions; delete from public.rate_limits; delete from public.wall_posts; delete from public.media; delete from public.videos; delete from public.schedule_items;
     update public.event_settings set name='Revolution Conference', description='', timezone='America/Sao_Paulo', starts_at = now() + interval '30 days', opens_at = now() + interval '30 days', ends_at = null,
       location_name = null, address = null, maps_url = null, stream_enabled = false, stream_url = null, stream_video_id = null, stream_note = '';
     update public.site_settings set site_title='Revolution Conference', tagline='', seo_description='', hero_image_url=null, instagram_url=null, youtube_channel_url=null, whatsapp_url=null, privacy_text=null,
@@ -106,7 +106,7 @@ await test('cabeçalhos de segurança: CSP com nonce, sem iframe externo, nosnif
   const r = await fetch(base);
   const csp = r.headers.get('content-security-policy') ?? '';
   ok(/script-src 'self' 'nonce-[^']+' 'strict-dynamic'/.test(csp), 'script-src com nonce: ' + csp);
-  ok(csp.includes("frame-ancestors 'none'") && csp.includes("object-src 'none'") && csp.includes('frame-src https://www.youtube-nocookie.com'));
+  ok(csp.includes("frame-ancestors 'none'") && csp.includes("object-src 'none'") && csp.includes('frame-src https://www.youtube-nocookie.com https://www.google.com'));
   ok(!/unsafe-eval/.test(csp), 'sem unsafe-eval em produção');
   eq(r.headers.get('x-content-type-options'), 'nosniff'); eq(r.headers.get('x-frame-options'), 'DENY');
   ok(!r.headers.has('x-powered-by'));
@@ -270,17 +270,35 @@ await test('sem data de abertura nunca antecipa a fase nova', async () => {
   await done(page);
 });
 
-await test('informações do evento e fuso configurável', async () => {
-  await db.exec(`update public.event_settings set name='Revolution Teste', description='Uma conferência', timezone='America/Sao_Paulo', starts_at='2030-06-15T22:30:00Z', opens_at = now() + interval '1 day', location_name='Igreja Central', address='Rua A, 100', maps_url='https://maps.app.goo.gl/abc'`);
+await test('local, mapa, data e horário do evento (fuso configurável)', async () => {
+  await db.exec(`update public.event_settings set name='Revolution Teste', description='Uma conferência', timezone='America/Sao_Paulo', starts_at='2030-06-15T22:30:00Z', ends_at='2030-06-16T22:30:00Z', opens_at = now() + interval '1 day', location_name='Igreja Central', address='Rua A, 100', maps_url='https://maps.app.goo.gl/abc'`);
   const page = await newPage();
   await page.goto(base);
-  const text = await page.locator('.info').first().innerText();
-  ok(/sábado, 15 de junho de 2030/i.test(text) && text.includes('19:30'), text);
+  await page.getByRole('heading', { name: 'Onde está acontecendo' }).waitFor();
+  const text = await page.locator('.where-card').innerText();
+  ok(text.includes('15 · 16 jun') && text.includes('19h30'), text);
   ok(text.includes('Igreja Central') && text.includes('Rua A, 100'));
-  eq(await page.getByRole('link', { name: /Ver no mapa/ }).getAttribute('href'), 'https://maps.app.goo.gl/abc');
+  eq(await page.getByRole('link', { name: /Abrir no mapa/ }).getAttribute('href'), 'https://maps.app.goo.gl/abc');
+  const src = await page.locator('.map iframe').getAttribute('src');
+  ok(src.startsWith('https://www.google.com/maps?q=') && src.endsWith('&output=embed'), src);
   await db.exec(`update public.event_settings set timezone='Europe/Lisbon'`);
   await page.reload();
-  ok((await page.locator('.info').first().innerText()).includes('23:30'), 'horário muda com o fuso');
+  ok((await page.locator('.where-card').innerText()).includes('23h30'), 'horário muda com o fuso');
+  await done(page);
+});
+
+await test('programação: agrupada por dia, na ordem; item não publicado não aparece', async () => {
+  await db.exec(`delete from public.schedule_items`);
+  await db.exec(`insert into public.schedule_items (day_label, time_label, title, description, position, is_published) values
+    ('Dia 1', '19h30', 'Abertura', 'Boas-vindas', 1, true), ('Dia 2', '19h30', 'Louvor', '', 3, true), ('Dia 1', '21h', 'Ministração', '', 2, true), ('Dia 1', '23h', 'Rascunho secreto', '', 4, false)`);
+  const page = await newPage();
+  await page.goto(base);
+  await page.getByRole('heading', { name: 'Programação' }).waitFor();
+  eq(await page.locator('.day-title').allTextContents(), ['Dia 1', 'Dia 2']);
+  eq(await page.locator('.day').first().locator('.slots strong').allTextContents(), ['Abertura', 'Ministração']);
+  eq(await page.getByText('Rascunho secreto').count(), 0);
+  await db.exec(`delete from public.schedule_items`);
+  await page.reload(); await page.getByText('Programação em breve').waitFor();
   await done(page);
 });
 

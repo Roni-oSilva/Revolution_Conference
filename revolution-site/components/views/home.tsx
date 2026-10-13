@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { getGallery, getHighlights, getSettings, getVideos } from '@/lib/data';
+import { getGallery, getHighlights, getSchedule, getSettings, getVideos } from '@/lib/data';
 import { Folder, type FolderItem } from '../Folders';
 import { slugify } from '@/lib/slug';
 import { parseIsoMs, type Phase } from '@/lib/phase';
-import { formatEventDate, formatShort } from '@/lib/format';
-import { isSafeHttpsUrl, youtubeEmbedUrl, youtubeWatchUrl } from '@/lib/urls';
+import { formatDays, formatShort, formatTimeH } from '@/lib/format';
+import { isSafeHttpsUrl, mapsEmbedUrl, mapsOpenUrl, youtubeEmbedUrl, youtubeWatchUrl } from '@/lib/urls';
+import { Logo } from '../Logo';
 import { PhaseGate } from '../PhaseGate';
 import { Gallery } from '../Gallery';
 import { StateBox } from '../States';
@@ -14,20 +15,28 @@ import type { EventSettings } from '@/lib/types';
 interface ViewOpts { client: SupabaseClient; preview?: boolean; forcePhase?: Phase; album?: string }
 const streamReady = (e: EventSettings) => e.stream_enabled && !!e.stream_video_id;
 
-function EventInfo({ event }: { event: EventSettings }) {
-  const when = formatEventDate(event.starts_at, event.timezone);
-  const hasPlace = event.location_name || event.address;
-  if (!when && !hasPlace && !event.description) return <StateBox title="Informações em breve">As informações do evento serão divulgadas aqui.</StateBox>;
+function Where({ event }: { event: EventSettings }) {
+  const query = [event.location_name, event.address].filter(Boolean).join(', ');
+  const days = formatDays(event.starts_at, event.ends_at, event.timezone);
+  const time = formatTimeH(event.starts_at, event.timezone);
+  if (!query && !days) return <StateBox title="Local e data em breve">As informações do evento serão divulgadas aqui.</StateBox>;
+  const open = event.maps_url && isSafeHttpsUrl(event.maps_url) ? event.maps_url : query ? mapsOpenUrl(query) : null;
   return (
-    <div className="info">
-      {when && <div className="card"><span className="kicker">Quando</span><h2 style={{ marginTop: 10 }}>{when}</h2><p className="muted" style={{ margin: 0 }}>Horário de Brasília ({event.timezone})</p></div>}
-      {hasPlace && (
-        <div className="card"><span className="kicker">Onde</span><h2 style={{ marginTop: 10 }}>{event.location_name || 'Local'}</h2>
-          {event.address && <p className="muted" style={{ margin: 0 }}>{event.address}</p>}
-          {event.maps_url && isSafeHttpsUrl(event.maps_url) && <p style={{ margin: '10px 0 0' }}><a className="link-btn" href={event.maps_url} target="_blank" rel="noopener noreferrer">Ver no mapa ↗</a></p>}
-        </div>
-      )}
-      {event.description && <div className="card"><span className="kicker">Sobre</span><p style={{ margin: '10px 0 0', whiteSpace: 'pre-wrap' }}>{event.description}</p></div>}
+    <div className="where">
+      {query && <div className="map"><iframe title={`Mapa: ${query}`} src={mapsEmbedUrl(query)} loading="lazy" referrerPolicy="no-referrer-when-downgrade" /></div>}
+      <div className="where-card">
+        <span className="kicker">Local</span>
+        <h3>{event.location_name || 'Local da conferência'}</h3>
+        {event.address && <p className="where-addr">{event.address}</p>}
+        {(days || time) && (
+          <dl className="where-meta">
+            {days && <div><dt>Data</dt><dd>{days}</dd></div>}
+            {time && <div><dt>Horário</dt><dd>{time}</dd></div>}
+          </dl>
+        )}
+        {open && <a className="btn solid where-btn" href={open} target="_blank" rel="noopener noreferrer">Abrir no mapa <span aria-hidden="true">→</span></a>}
+        {event.description && <p className="where-about">{event.description}</p>}
+      </div>
     </div>
   );
 }
@@ -36,7 +45,9 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
   const s = await getSettings(client);
   if (!s.ok) return <div className="wrap"><StateBox title="Não foi possível carregar o site" kind="error"><p>Tente novamente em instantes.</p></StateBox></div>;
   const { site, event } = s.data;
-  const [g, h, vids] = await Promise.all([getGallery(client, preview, 60), getHighlights(client, preview), getVideos(client, preview)]);
+  const [g, h, vids, sch] = await Promise.all([getGallery(client, preview, 60), getHighlights(client, preview), getVideos(client, preview), getSchedule(client, preview)]);
+  const days = new Map<string, NonNullable<typeof sch.data>>();
+  for (const it of sch.data ?? []) (days.get(it.day_label) ?? days.set(it.day_label, []).get(it.day_label)!).push(it);
   const serverNow = Date.now();
   const opensAt = parseIsoMs(event.opens_at ?? event.starts_at);
   const endsAt = parseIsoMs(event.ends_at);
@@ -58,6 +69,7 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
         )}
         <div className="hero-in hero-grid">
           <div className="hero-main">
+            <Logo size="xl" />
             <span className="kicker">{variant === 'pre' ? 'Em breve' : variant === 'open' ? (live ? '● Ao vivo agora' : 'Começou') : 'Encerrada'}</span>
             <h1 id="home-title">{variant === 'ended' ? <>Obrigado por <span className="red">viver</span></> : <>{event.name}</>}</h1>
             {site.tagline && <p className="lead">{site.tagline}</p>}
@@ -113,7 +125,29 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
             <div className="player lb-empty"><div><strong>A transmissão aparecerá aqui</strong><span>Quando o AO VIVO começar, o vídeo do YouTube é exibido nesta caixa.</span>{site.youtube_channel_url && isSafeHttpsUrl(site.youtube_channel_url) && <a className="link-btn" href={site.youtube_channel_url} target="_blank" rel="noopener noreferrer">Ir ao canal no YouTube ↗</a>}</div></div>
           )}
         </section>
-        <EventInfo event={event} />
+        <section id="programacao" aria-labelledby="prog" className="schedule" style={{ scrollMarginTop: 90 }}>
+          <span className="kicker">Dia a dia</span>
+          <h2 id="prog" className="section-title">Programação</h2>
+          {!sch.ok ? <StateBox title="Não foi possível carregar a programação" kind="error" /> : days.size === 0 ? <StateBox title="Programação em breve">Os horários de cada dia serão divulgados aqui.</StateBox> : (
+            <div className="days">
+              {[...days.entries()].map(([label, items]) => (
+                <div key={label} className="day glass-card">
+                  <h3 className="day-title">{label}</h3>
+                  <ol className="slots">
+                    {items.map((it) => (
+                      <li key={it.id}><span className="slot-time">{it.time_label || '—'}</span><div><strong>{it.title}</strong>{it.description && <p>{it.description}</p>}</div></li>
+                    ))}
+                  </ol>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+        <section id="onde" aria-labelledby="onde-t" style={{ marginTop: 64, scrollMarginTop: 90 }}>
+          <span className="kicker">Acontecendo</span>
+          <h2 id="onde-t" className="section-title">Onde está acontecendo</h2>
+          <Where event={event} />
+        </section>
         {hl.length > 0 && (
           <section aria-labelledby="dest" style={{ marginTop: 56 }}>
             <h2 id="dest" className="section-title">Destaques</h2>

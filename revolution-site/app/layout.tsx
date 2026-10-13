@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import Link from 'next/link';
 import './globals.css';
+import { Logo } from '@/components/Logo';
 import { NavTabs } from '@/components/NavTabs';
 import { createPublicClient } from '@/lib/supabase/public';
 import { getSettings } from '@/lib/data';
@@ -49,12 +50,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <a className="skip" href="#conteudo">Pular para o conteúdo</a>
         <header className="top">
           <Link href="/" className="brand" aria-label={`${site?.site_title || 'Revolution Conference'} — início`}>
-            <span aria-hidden="true">{site?.site_title || 'Revolution'}</span>
+            <Logo />
           </Link>
           <NavTabs />
         </header>
         <main id="conteudo" tabIndex={-1}>{children}</main>
         <footer className="foot">
+          <div className="foot-logo"><Logo size="xl" /></div>
           <div className="foot-in">
             <span>© {new Date().getFullYear()} {site?.site_title || 'Revolution Conference'}</span>
             <span style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>

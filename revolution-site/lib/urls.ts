@@ -7,6 +7,10 @@ const YT_ID = /^[A-Za-z0-9_-]{11}$/;
 export const DRIVE_HOSTS = ['drive.google.com', 'docs.google.com'] as const;
 export const YOUTUBE_HOSTS = ['youtube.com', 'www.youtube.com', 'm.youtube.com', 'youtu.be', 'www.youtube-nocookie.com', 'youtube-nocookie.com'] as const;
 
+/** Mapa incorporado (sem chave de API) a partir do endereço. Só google.com/maps. */
+export function mapsEmbedUrl(query: string): string { return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`; }
+export function mapsOpenUrl(query: string): string { return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`; }
+
 export function parseHttpsUrl(input: unknown): URL | null {
   if (typeof input !== 'string') return null;
   const s = input.trim();

@@ -38,6 +38,18 @@ describe('leitura pública (anon)', () => {
       expect((await attempt(db, 'select site_title from public.site_settings')).rows).toHaveLength(1);
     });
   });
+  it('programação: vê só itens publicados e não escreve', async () => {
+    await db.exec(`insert into public.schedule_items (day_label, title, is_published) values ('Dia 1','pub',true),('Dia 1','rascunho',false)`);
+    await as(db, anon, async () => {
+      expect((await attempt(db, 'select title from public.schedule_items')).rows!.map((x) => x.title)).toEqual(['pub']);
+      expect((await attempt(db, `insert into public.schedule_items (day_label, title) values ('x','y')`)).ok).toBe(false);
+    });
+    await as(db, editor, async () => {
+      expect((await attempt(db, 'select 1 from public.schedule_items')).rows).toHaveLength(2);
+      expect((await attempt(db, `insert into public.schedule_items (day_label, title) values ('Dia 2','novo')`)).ok).toBe(true);
+    });
+    await db.exec('delete from public.schedule_items');
+  });
   it('vê somente publicações publicadas', async () => {
     const r = await as(db, anon, () => attempt(db, 'select id from public.wall_posts'));
     expect(r.rows!.map((x) => x.id)).toEqual([published]);

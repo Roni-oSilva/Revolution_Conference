@@ -21,7 +21,7 @@ html.lock { overflow: hidden; }
 <div id="intro" role="presentation"><canvas id="introCanvas" aria-hidden="true"></canvas><button type="button" class="intro-skip" id="introSkip">Pular introdução</button></div>
 <a class="skip" href="#conteudo">Pular para o conteúdo</a>
 <header class="top">
-  <a href="#/" class="brand" aria-label="Revolution Conference — início"><span aria-hidden="true">Revolution</span></a>
+  <a href="#/" class="brand" aria-label="Revolution Conference — início"><span class="logo logo-md"><svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 4c3 10 15 16 15 31a15 15 0 0 1-30 0c0-7 3-11 7-15 1 4 3 7 6 8-1-8 0-17 2-24z" fill="#ef4a2b"/><path d="M32 30c2 5 7 8 7 14a7 7 0 0 1-14 0c0-4 2-6 3-7 1 2 2 3 4 3-1-3-1-7 0-10z" fill="#fbe7d2"/></svg><span class="logo-text"><b>REVOLUTION</b><i>CONFERENCE</i></span></span></a>
   <nav class="tabs" aria-label="Principal"><a href="#/" data-tab="inicio">Início</a><a href="#/ao-vivo" data-tab="ao-vivo">Ao Vivo</a><a href="#/mural" data-tab="mural">Mural</a></nav>
 </header>
 <main id="conteudo" tabindex="-1">
@@ -32,7 +32,7 @@ html.lock { overflow: hidden; }
     <div class="hero-bg" aria-hidden="true"></div><span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span>
     <div class="hero-in hero-grid">
       <div class="hero-main">
-        <span class="kicker">Em breve</span>
+        <span class="logo logo-xl"><svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 4c3 10 15 16 15 31a15 15 0 0 1-30 0c0-7 3-11 7-15 1 4 3 7 6 8-1-8 0-17 2-24z" fill="#ef4a2b"/><path d="M32 30c2 5 7 8 7 14a7 7 0 0 1-14 0c0-4 2-6 3-7 1 2 2 3 4 3-1-3-1-7 0-10z" fill="#fbe7d2"/></svg><span class="logo-text"><b>REVOLUTION</b><i>CONFERENCE</i></span></span><span class="kicker">Em breve</span>
         <h1 id="home-title">Revolution<br>Conference</h1>
         <p class="lead">Apaixonados pela Presença</p>
         <div class="btn-row"><a class="btn" href="#/ao-vivo">Ao vivo</a><a class="btn solid" href="#/mural">Ver o mural</a></div>
@@ -44,11 +44,22 @@ html.lock { overflow: hidden; }
   <div class="wrap">
     <section class="livebox glass" aria-labelledby="lb-title"><div class="lb-head"><h2 id="lb-title" class="section-title" style="margin:0">Vídeo ao vivo</h2><span class="badge">Aguardando</span></div>
       <div class="player lb-empty"><div><strong>A transmissão aparecerá aqui</strong><span>Quando o AO VIVO começar, o vídeo do YouTube é exibido nesta caixa.</span><a class="link-btn" href="#">Ir ao canal no YouTube ↗</a></div></div></section>
-    <div class="info">
-      <div class="card"><span class="kicker">Quando</span><h2 style="margin-top:10px" id="qd">Data definida no painel</h2><p class="muted" style="margin:0">Horário de Brasília (America/Sao_Paulo)</p></div>
-      <div class="card"><span class="kicker">Onde</span><h2 style="margin-top:10px">Local a confirmar</h2><p class="muted" style="margin:0">Endereço e mapa aparecem aqui quando o admin cadastrar.</p></div>
-      <div class="card"><span class="kicker">Sobre</span><p style="margin:10px 0 0">Texto do evento escrito no painel.</p></div>
-    </div>
+    <section id="programacao" class="schedule" aria-labelledby="prog"><span class="kicker">Dia a dia</span><h2 id="prog" class="section-title">Programação</h2>
+      <div class="days">
+        <div class="day glass-card"><h3 class="day-title">Dia 1 · 17 de outubro</h3><ol class="slots">
+          <li><span class="slot-time">19h30</span><div><strong>Abertura e louvor</strong><p>Recepção e tempo de adoração.</p></div></li>
+          <li><span class="slot-time">20h30</span><div><strong>Ministração</strong><p>Palavra de abertura da conferência.</p></div></li>
+          <li><span class="slot-time">22h00</span><div><strong>Encerramento do dia</strong></div></li></ol></div>
+        <div class="day glass-card"><h3 class="day-title">Dia 2 · 18 de outubro</h3><ol class="slots">
+          <li><span class="slot-time">19h30</span><div><strong>Louvor</strong></div></li>
+          <li><span class="slot-time">20h30</span><div><strong>Ministração principal</strong><p>Apaixonados pela Presença.</p></div></li>
+          <li><span class="slot-time">22h00</span><div><strong>Encerramento</strong></div></li></ol></div>
+      </div></section>
+    <section id="onde" style="margin-top:64px" aria-labelledby="onde-t"><span class="kicker">Acontecendo</span><h2 id="onde-t" class="section-title">Onde está acontecendo</h2>
+      <div class="where"><div class="map" style="display:grid;place-items:center;background:radial-gradient(at 30% 30%,#1b1b1d,#0a0a0b)"><span style="color:#888;font-size:13px;letter-spacing:.14em;text-transform:uppercase">Mapa do Google (aparece no site real)</span><span style="position:absolute;left:50%;top:48%;width:26px;height:26px;border-radius:50% 50% 50% 0;background:#e0231d;rotate:-45deg;box-shadow:0 0 0 6px rgba(224,35,29,.25)"></span></div>
+        <div class="where-card"><span class="kicker">Local</span><h3>Local da conferência</h3><p class="where-addr">R. Dom Teresa Cristina, 135 · Centro, Ulianópolis — PA</p>
+          <dl class="where-meta"><div><dt>Data</dt><dd>17 · 18 out</dd></div><div><dt>Horário</dt><dd>19h30</dd></div></dl>
+          <a class="btn solid where-btn" href="#">Abrir no mapa <span aria-hidden="true">→</span></a></div></div></section>
     <section class="glow-section" style="margin-top:64px">
       <div class="folders-head"><span class="kicker">Dois dias</span><h2 class="section-title" style="margin-top:12px">Reviva cada momento</h2><p>Vídeos e fotos oficiais, reunidos em duas pastas.</p></div>
       <div class="fs">
@@ -86,7 +97,7 @@ html.lock { overflow: hidden; }
 </div></div>
 
 </main>
-<footer class="foot"><div class="foot-in"><span>© Revolution Conference</span><span>Política de privacidade</span></div></footer>
+<footer class="foot"><div class="foot-logo"><span class="logo logo-xl"><svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 4c3 10 15 16 15 31a15 15 0 0 1-30 0c0-7 3-11 7-15 1 4 3 7 6 8-1-8 0-17 2-24z" fill="#ef4a2b"/><path d="M32 30c2 5 7 8 7 14a7 7 0 0 1-14 0c0-4 2-6 3-7 1 2 2 3 4 3-1-3-1-7 0-10z" fill="#fbe7d2"/></svg><span class="logo-text"><b>REVOLUTION</b><i>CONFERENCE</i></span></span></div><div class="foot-in"><span>© Revolution Conference</span><span>Política de privacidade</span></div></footer>
 <div class="tag-preview">Prévia · conteúdo de exemplo · o site real usa os dados do painel</div>
 <script>
 // abas

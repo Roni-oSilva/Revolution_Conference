@@ -17,7 +17,7 @@ function buildCsp(nonce: string): string {
     "img-src 'self' blob: data: https:",
     "font-src 'self'",
     `connect-src ${connect}`,
-    'frame-src https://www.youtube-nocookie.com',
+    'frame-src https://www.youtube-nocookie.com https://www.google.com',
     "media-src 'self'",
     "object-src 'none'",
     "base-uri 'self'",

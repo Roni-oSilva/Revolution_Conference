@@ -1,6 +1,6 @@
 // Acesso a dados (somente leitura) compartilhado entre o site público e a pré-visualização do admin.
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { EventSettings, MediaRow, SiteSettings, VideoRow, WallPost } from './types';
+import type { EventSettings, MediaRow, ScheduleRow, SiteSettings, VideoRow, WallPost } from './types';
 import { REACTION_EMOJIS, type ReactionEmoji } from './reactions';
 
 export const WALL_PAGE_SIZE = 10;
@@ -30,6 +30,13 @@ export async function getVideos(c: SupabaseClient, preview = false): Promise<Res
   if (!preview) q = q.eq('is_published', true).neq('availability', 'unavailable');
   const { data, error } = await q.order('category').order('position').order('created_at', { ascending: false });
   return error ? fail(error) : { ok: true, data: (data ?? []) as VideoRow[], error: null };
+}
+
+export async function getSchedule(c: SupabaseClient, preview = false): Promise<Result<ScheduleRow[]>> {
+  let q = c.from('schedule_items').select('*');
+  if (!preview) q = q.eq('is_published', true);
+  const { data, error } = await q.order('position').order('created_at');
+  return error ? fail(error) : { ok: true, data: (data ?? []) as ScheduleRow[], error: null };
 }
 
 const POST_SELECT = '*, media:image_media_id(drive_file_id, alt, availability), post_reaction_counts(emoji, count)';

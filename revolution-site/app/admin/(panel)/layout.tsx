@@ -6,7 +6,7 @@ import { logoutAction } from '../actions';
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Painel', robots: { index: false, follow: false } };
 
-const NAV = [['/admin', 'Dashboard'], ['/admin/evento', 'Evento e home'], ['/admin/mural', 'Mural'], ['/admin/midia', 'Mídia'], ['/admin/seguranca', 'Segurança'], ['/admin/preview', 'Pré-visualizar']] as const;
+const NAV = [['/admin', 'Dashboard'], ['/admin/evento', 'Evento e home'], ['/admin/mural', 'Mural'], ['/admin/programacao', 'Programação'], ['/admin/midia', 'Mídia'], ['/admin/seguranca', 'Segurança'], ['/admin/preview', 'Pré-visualizar']] as const;
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const { user, role } = await requireAdmin();

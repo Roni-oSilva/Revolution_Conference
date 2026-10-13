@@ -50,3 +50,5 @@ export const formToObject = (fd: FormData): Record<string, FormDataEntryValue> =
   for (const [k, v] of fd.entries()) if (!k.startsWith('$ACTION')) o[k] = v;
   return o;
 };
+
+export const scheduleSchema = z.object({ day_label: z.string().trim().min(1).max(60), time_label: text(20), title: z.string().trim().min(1).max(160), description: text(600), position: int(-9999, 9999).default(9999), is_published: bool });
