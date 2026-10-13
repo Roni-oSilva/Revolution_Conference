@@ -1,4 +1,5 @@
 'use client';
+import { useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { computePhase, type Phase } from '@/lib/phase';
 
@@ -18,6 +19,7 @@ interface Props {
 export function PhaseGate({ serverNow, opensAt, endsAt, pre, open, ended, forcePhase }: Props) {
   const [now, setNow] = useState(serverNow);
   const offset = useRef(0);
+  const router = useRouter();
 
   useEffect(() => {
     if (forcePhase) return;
@@ -38,13 +40,14 @@ export function PhaseGate({ serverNow, opensAt, endsAt, pre, open, ended, forceP
     }
     void sync();
     const id = window.setInterval(tick, 250);
-    const resync = () => { if (document.visibilityState !== 'hidden') void sync(); };
+    // ao voltar à aba / foco / rede: recalcula a hora E busca de novo as datas do evento (o admin pode ter mudado a abertura)
+    const resync = () => { if (document.visibilityState !== 'hidden') { void sync(); router.refresh(); } };
     document.addEventListener('visibilitychange', resync);
     window.addEventListener('focus', resync);
     window.addEventListener('online', resync);
     const slow = window.setInterval(resync, 5 * 60 * 1000);
     return () => { stopped = true; clearInterval(id); clearInterval(slow); document.removeEventListener('visibilitychange', resync); window.removeEventListener('focus', resync); window.removeEventListener('online', resync); };
-  }, [serverNow, forcePhase]);
+  }, [serverNow, forcePhase, router]);
 
   const phase = forcePhase ?? computePhase(now, opensAt, endsAt);
   return (

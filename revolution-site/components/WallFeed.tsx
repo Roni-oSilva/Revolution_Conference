@@ -125,7 +125,7 @@ export function WallFeed({ posts, supabaseUrl, anonKey, reactionsEnabled, timezo
                     const n = counts[p.id]?.[e] ?? 0;
                     const on = mine[p.id] === e;
                     return (
-                      <button key={e} type="button" className="react" aria-pressed={on} disabled={readOnly || !!pending[p.id]} data-emoji={e}
+                      <button key={e} type="button" className="react" aria-pressed={on} disabled={readOnly} aria-busy={!!pending[p.id] || undefined} data-emoji={e}
                         aria-label={`${REACTION_LABELS[e]} (${n})${on ? ', sua reação' : ''}`} onClick={() => react(p.id, e)}>
                         <span className="e" aria-hidden="true">{e}</span><span data-count>{n}</span>
                       </button>

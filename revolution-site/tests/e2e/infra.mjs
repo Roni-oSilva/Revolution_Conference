@@ -90,7 +90,7 @@ export async function startInfra({ chrome } = {}) {
             target.on('error', () => resolve({ status: 502, headers: {}, body: Buffer.from('{"message":"postgrest fora do ar"}') }));
             target.end(body);
           }));
-          if (process.env.DEBUG_E2E) console.log('[proxy]', attempt, out.status, out.body.toString().slice(0, 160));
+          if (process.env.DEBUG_E2E) console.log('[proxy]', url.pathname + url.search.slice(0, 60), attempt, out.status, out.body.toString().slice(0, 160));
           const txt = out.body.toString(); const transient = (out.status === 503 && /PGRST00[01]/.test(txt));
           if (transient && attempt < 3) { await new Promise((r) => setTimeout(r, 250)); continue; }
           const { 'transfer-encoding': _te, connection: _c, ...hdrs } = out.headers; res.writeHead(out.status, { ...hdrs, 'content-length': out.body.length }); return res.end(out.body);

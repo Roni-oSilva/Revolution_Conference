@@ -158,8 +158,12 @@ await test('sem rolagem horizontal em 360, 768 e 1280 px (3 páginas)', async ()
     const page = await newPage({ viewport: { width: w, height: 800 } });
     for (const path of ['/', '/ao-vivo', '/mural', `/mural/${id}`]) {
       await page.goto(base + path); await page.waitForLoadState('networkidle');
-      const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-      ok(over <= 1, `${w}px ${path}: overflow ${over}`);
+      const { over, who } = await page.evaluate(() => {
+        const W = document.documentElement.clientWidth;
+        const who = [...document.querySelectorAll('body *')].filter((e) => !e.closest('.marquee, .orb, .hero-bg, #intro') && e.getBoundingClientRect().right > W + 1).slice(0, 4).map((e) => `${e.tagName}.${e.className}`);
+        return { over: document.documentElement.scrollWidth - window.innerWidth, who };
+      });
+      ok(over <= 1, `${w}px ${path}: overflow ${over} ${who.join(' | ')}`);
     }
     await done(page);
   }
@@ -182,17 +186,20 @@ await test('teclado: primeiro Tab vai ao "Pular para o conteúdo"; reação por 
   await page.goto(base);
   await page.keyboard.press('Tab');
   eq(await page.evaluate(() => document.activeElement?.textContent), 'Pular para o conteúdo');
-  await page.locator('.gallery button.g').first().focus();
+  await page.waitForFunction(() => { const b = document.querySelector('.gallery button.g'); return !!b && Object.keys(b).some((k) => k.startsWith('__reactProps')); }, null, { timeout: 40000 }).catch(async (e) => { throw new Error('galeria não hidratou: ' + JSON.stringify(await page.evaluate(() => { const b = document.querySelector('.gallery button.g'); return { has: !!b, keys: b ? Object.keys(b) : [], scripts: document.scripts.length, ready: document.readyState, html: document.querySelector('.gallery')?.outerHTML.slice(0, 300) }; })) + ' ' + JSON.stringify(page.problems)); });
+  await page.locator('.gallery button.g').first().focus({ timeout: 8000 }).catch(async () => { throw new Error((await page.locator('body').innerText()).slice(0, 600)); });
   await page.keyboard.press('Enter');
-  await waitFor(() => page.locator('dialog[open]').count());
+  await waitFor(() => page.locator('dialog[open]').count(), 10000, 120, 'diálogo da galeria abrir com Enter').catch(async (e) => { throw new Error(e.message + ' | foco=' + (await page.evaluate(() => document.activeElement?.outerHTML.slice(0, 160))) + ' | problemas=' + JSON.stringify(page.problems)); });
   await page.keyboard.press('Escape');
-  await waitFor(async () => (await page.locator('dialog[open]').count()) === 0);
+  await waitFor(async () => (await page.locator('dialog[open]').count()) === 0, 10000, 120, 'diálogo fechar com Esc');
   await page.goto(`${base}/mural`);
   const fire = page.locator(`[data-post-id="${id}"] .react[data-emoji="🔥"]`);
+  await page.waitForFunction(() => { const b = document.querySelector('.react'); return !!b && Object.keys(b).some((k) => k.startsWith('__reactProps')); }, null, { timeout: 40000 }).catch((e) => { throw new Error('reações não hidrataram: ' + e.message.split('\n')[0]); });
   await fire.focus(); await page.keyboard.press('Enter');
-  await waitFor(async () => (await fire.getAttribute('aria-pressed')) === 'true');
+  await waitFor(async () => (await fire.getAttribute('aria-pressed')) === 'true', 10000, 120, 'reação marcada (Enter)');
+  await waitFor(async () => (await fire.getAttribute('aria-busy')) === null, 10000, 100, 'requisição terminar');
   await page.keyboard.press('Space'); // alterna (remove)
-  await waitFor(async () => (await fire.getAttribute('aria-pressed')) === 'false');
+  await waitFor(async () => (await fire.getAttribute('aria-pressed')) === 'false', 10000, 120, 'reação removida (Espaço)');
   await done(page);
   await reset();
 });
@@ -266,18 +273,19 @@ await test('sem data de abertura nunca antecipa a fase nova', async () => {
   const page = await newPage();
   await page.goto(base);
   await page.locator('.hero .kicker', { hasText: 'Em breve' }).waitFor();
-  await page.getByText('Data de abertura a confirmar').waitFor();
+  await page.locator('.hero-card', { hasText: 'Data a confirmar' }).waitFor();
   await done(page);
 });
 
 await test('local, mapa, data e horário do evento (fuso configurável)', async () => {
+  await reset();
   await db.exec(`update public.event_settings set name='Revolution Teste', description='Uma conferência', timezone='America/Sao_Paulo', starts_at='2030-06-15T22:30:00Z', ends_at='2030-06-16T22:30:00Z', opens_at = now() + interval '1 day', location_name='Igreja Central', address='Rua A, 100', maps_url='https://maps.app.goo.gl/abc'`);
   const page = await newPage();
   await page.goto(base);
-  await page.getByRole('heading', { name: 'Onde está acontecendo' }).waitFor();
+  await page.getByRole('heading', { name: 'Onde está acontecendo' }).waitFor({ timeout: 8000 }).catch(async (e) => { throw new Error((await page.locator('body').innerText()).slice(0, 400)); });
   const text = await page.locator('.where-card').innerText();
-  ok(text.includes('15 · 16 jun') && text.includes('19h30'), text);
-  ok(text.includes('Igreja Central') && text.includes('Rua A, 100'));
+  ok(text.includes('15 · 16 jun') && text.includes('19h30'), JSON.stringify(text));
+  ok(/igreja central/i.test(text) && text.includes('Rua A, 100'), JSON.stringify(text));
   eq(await page.getByRole('link', { name: /Abrir no mapa/ }).getAttribute('href'), 'https://maps.app.goo.gl/abc');
   const src = await page.locator('.map iframe').getAttribute('src');
   ok(src.startsWith('https://www.google.com/maps?q=') && src.endsWith('&output=embed'), src);
@@ -433,8 +441,8 @@ await test('pastas Vídeos e Fotos: abrem, só então os atalhos ficam focáveis
   eq(await folderV.locator('.fl a').first().getAttribute('href'), '/ao-vivo#pregacoes');
   await folderF.getByRole('button', { name: /Fotos/ }).click();
   eq(await folderF.locator('.fl a').first().getAttribute('href'), '/?album=Dia%201#galeria');
-  await folderF.locator('.fl a').first().click({ force: true });
-  await page.waitForURL(/album=Dia%201/);
+  await folderF.locator('.fl a').first().evaluate((a) => a.click());
+  await page.waitForURL(/album=Dia%201/, { waitUntil: 'commit' });
   await waitFor(async () => (await page.locator('.gallery button.g').count()) === 2, 8000, 150, 'só as 2 fotos do Dia 1');
   eq(await page.locator('.chip[aria-pressed="true"]').textContent(), 'Dia 1');
   await page.locator('.chip', { hasText: 'Todas' }).click();

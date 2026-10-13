@@ -95,12 +95,12 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
   const liveBase = preview ? '/admin/preview/ao-vivo' : '/ao-vivo';
   const cats = new Map<string, number>();
   for (const v of vids.data ?? []) cats.set(v.category, (cats.get(v.category) ?? 0) + 1);
-  const videoItems: FolderItem[] = [...cats.entries()].slice(0, 2).map(([c, n]) => ({ label: c, hint: `${n} vídeo${n > 1 ? 's' : ''}`, href: `${liveBase}#${slugify(c)}` }));
+  const videoItems: FolderItem[] = [...cats.entries()].sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0], 'pt-BR')).slice(0, 2).map(([c, n]) => ({ label: c, hint: `${n} vídeo${n > 1 ? 's' : ''}`, href: `${liveBase}#${slugify(c)}` }));
   videoItems.push({ label: 'Ao vivo', hint: 'YouTube', href: liveBase });
   const albumCount = new Map<string, number>();
   for (const m of gallery) if (m.album) albumCount.set(m.album, (albumCount.get(m.album) ?? 0) + 1);
   const homeBase = preview ? '/admin/preview/inicio' : '/';
-  const photoItems: FolderItem[] = [...albumCount.entries()].slice(0, 2).map(([a, n]) => ({ label: a, hint: `${n} foto${n > 1 ? 's' : ''}`, href: `${homeBase}?album=${encodeURIComponent(a)}#galeria` }));
+  const photoItems: FolderItem[] = [...albumCount.entries()].sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0], 'pt-BR')).slice(0, 2).map(([a, n]) => ({ label: a, hint: `${n} foto${n > 1 ? 's' : ''}`, href: `${homeBase}?album=${encodeURIComponent(a)}#galeria` }));
   photoItems.push({ label: 'Galeria completa', hint: 'Drive', href: '#galeria' });
   const nVideos = (vids.data ?? []).length;
   const plural = (n: number) => `${n} ${n === 1 ? 'item' : 'itens'}`;

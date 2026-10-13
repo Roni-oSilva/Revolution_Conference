@@ -58,6 +58,8 @@ export async function getWallPage(c: SupabaseClient, page: number, includeUnpubl
   const { data, error, count } = await visible(c, includeUnpublished)
     .order('position', { ascending: true }).order('created_at', { ascending: false })
     .range((p - 1) * WALL_PAGE_SIZE, p * WALL_PAGE_SIZE - 1);
+  // página além do fim: o PostgREST responde 416 (PGRST103) → lista vazia, não é erro do site
+  if (error?.code === 'PGRST103') return { ok: true, data: { posts: [], total: 0 }, error: null };
   if (error) return fail(error);
   return { ok: true, data: { posts: (data ?? []).map(shapePost), total: count ?? 0 }, error: null };
 }
