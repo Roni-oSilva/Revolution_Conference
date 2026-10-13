@@ -63,7 +63,7 @@ Fluxo da transmissão: **câmera → OBS Studio → YouTube Live → site**. O s
 
 ## 5. Conteúdo inicial
 
-- **Evento e home** (`/admin/evento`): nome, descrição, fuso, data do evento, **abertura** (fim da contagem e troca de fase), encerramento, local, mapa, banner, redes e texto de privacidade.
+- **Evento e home** (`/admin/evento`): nome, descrição, fuso, data do evento, **abertura** (momento da troca de fase), encerramento, local, mapa, banner, redes e texto de privacidade.
 - **Mural** (`/admin/mural`): crie rascunhos, **pré-visualize** (`Pré-visualizar`) e publique.
 - Nenhuma data é presumida: enquanto a **abertura** não for definida em `/admin/evento`, o site fica na fase “pré-evento” e mostra “Data de abertura a confirmar”.
 

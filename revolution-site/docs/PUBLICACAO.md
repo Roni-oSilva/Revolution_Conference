@@ -14,7 +14,7 @@
 
 ### Verificar o que foi publicado (checklist)
 
-- [ ] `/` abre, mostra a contagem e (depois da abertura) a fase nova sem recarregar.
+- [ ] `/` abre, mostra a caixa de vídeo ao vivo e (depois da abertura) a fase nova sem recarregar.
 - [ ] `/ao-vivo`, `/mural`, `/privacidade` abrem; `/robots.txt` bloqueia `/admin` e `/api`.
 - [ ] `/admin` sem login redireciona para `/admin/login`; usuário comum cai em “acesso negado”.
 - [ ] Reaja a uma publicação de teste: contagem muda; recarregue e a reação continua marcada.

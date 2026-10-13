@@ -5,13 +5,14 @@ import base64, sys, re
 b64 = lambda p: base64.b64encode(open(p, 'rb').read()).decode()
 F = 'public/fonts/'
 fonts = f"""
-@font-face{{font-family:'Archivo Black';src:url(data:font/ttf;base64,{b64(F+'archivo-black.ttf')}) format('truetype');font-weight:400;font-display:swap}}
-@font-face{{font-family:'Inter';src:url(data:font/ttf;base64,{b64(F+'inter-300.ttf')}) format('truetype');font-weight:300;font-display:swap}}
-@font-face{{font-family:'Inter';src:url(data:font/ttf;base64,{b64(F+'inter-600.ttf')}) format('truetype');font-weight:600;font-display:swap}}
+@font-face{{font-family:'Anton';src:url(data:font/woff2;base64,{b64(F+'anton-400.woff2')}) format('woff2');font-weight:400;font-display:swap}}
+@font-face{{font-family:'Poppins';src:url(data:font/woff2;base64,{b64(F+'poppins-300.woff2')}) format('woff2');font-weight:300;font-display:swap}}
+@font-face{{font-family:'Poppins';src:url(data:font/woff2;base64,{b64(F+'poppins-400.woff2')}) format('woff2');font-weight:400;font-display:swap}}
+@font-face{{font-family:'Poppins';src:url(data:font/woff2;base64,{b64(F+'poppins-600.woff2')}) format('woff2');font-weight:600;font-display:swap}}
 """
 css = open('app/globals.css').read()
 # variáveis de fonte do Next → fontes embutidas
-css = css.replace("var(--font-title), 'Archivo Black'", "'Archivo Black'").replace("var(--font-body), Inter", "Inter")
+css = css.replace("var(--font-title), Anton", "Anton").replace("var(--font-body), Poppins", "Poppins")
 html = open('scripts/preview-template.html').read()
 html = html.replace('/*FONTS*/', fonts).replace('/*APPCSS*/', css)
 html = html.replace('/*INTROJS*/', open('scripts/preview-intro.js').read())

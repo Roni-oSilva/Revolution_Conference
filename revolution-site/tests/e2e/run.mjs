@@ -198,18 +198,14 @@ await test('teclado: primeiro Tab vai ao "Pular para o conteúdo"; reação por 
 });
 
 // ═════════════════════════ 3. Contagem e troca de fase ═════════════════════════
-group('Contagem regressiva e troca de fase');
-await test('contagem correta a partir do horário do servidor (2d 3h 4m)', async () => {
+group('Troca de fase');
+await test('antes da abertura: sem contagem regressiva; mostra "Em breve" e cartão do evento', async () => {
   await setOpen(`now() + interval '2 days 3 hours 4 minutes 30 seconds'`);
   const page = await newPage();
   await page.goto(base);
-  const label = await page.locator('[role="timer"]').getAttribute('aria-label');
-  ok(/^Faltam 2 dias, 3 horas, 4 minutos e \d+ segundos$/.test(label ?? ''), label ?? 'sem timer');
-  const first = await page.locator('.count b').allTextContents();
-  eq(first.slice(0, 3), ['02', '03', '04']);
-  await sleep(1500);
-  const second = await page.locator('.count b').last().textContent();
-  ok(second !== first[3], 'os segundos avançam');
+  eq(await page.locator('[role="timer"], .count').count(), 0, 'não há relógio/contagem');
+  await page.locator('.hero .kicker', { hasText: 'Em breve' }).waitFor();
+  ok(await page.locator('.hero-card').isVisible(), 'cartão do evento visível');
   await done(page);
 });
 
@@ -219,10 +215,8 @@ await test('troca de fase automática SEM recarregar (pré → pós-abertura)', 
   await page.goto(base);
   await page.getByText('Em breve', { exact: true }).first().waitFor();
   await page.evaluate(() => { window.__naoRecarregou = 'sim'; });
-  eq(await page.locator('[role="timer"]').count(), 1);
   await page.locator('.hero .kicker', { hasText: /Começou|Ao vivo agora/ }).waitFor({ timeout: 20000 });
   eq(await page.evaluate(() => window.__naoRecarregou), 'sim', 'a página não foi recarregada');
-  eq(await page.locator('[role="timer"]').count(), 0, 'contagem some na nova fase');
   ok(await page.getByRole('link', { name: 'Ver o mural' }).isVisible());
   await done(page);
 });
@@ -232,7 +226,6 @@ await test('abrir ou atualizar depois do horário mostra direto a fase nova', as
   const page = await newPage();
   await page.goto(base);
   await page.locator('.hero .kicker', { hasText: 'Começou' }).waitFor();
-  eq(await page.locator('[role="timer"]').count(), 0);
   await page.reload();
   await page.locator('.hero .kicker', { hasText: 'Começou' }).waitFor();
   await done(page);
@@ -245,8 +238,6 @@ await test('relógio do visitante errado (+10 dias / −10 dias): vale a hora do
     await page.goto(base);
     await page.waitForLoadState('networkidle'); await sleep(1200);
     eq(await page.locator('.hero .kicker').first().textContent(), 'Em breve', `deslocamento ${shift}`);
-    const label = await page.locator('[role="timer"]').getAttribute('aria-label');
-    ok(/^Faltam 0 dias, 0 horas, (5\d|4\d) minutos/.test(label ?? ''), label ?? '');
     await done(page);
   }
 });
@@ -360,14 +351,19 @@ await test('destaques aparecem na home com link para a publicação', async () =
 
 // ═════════════════════════ 4b. Entrada (fogo) e pastas ═════════════════════════
 group('Entrada com o nome pegando fogo e pastas');
-await test('entrada: desenha fogo no canvas, pode ser pulada, libera o site e não repete na sessão', async () => {
+await test('entrada: nome surge e se desintegra em partículas (sem fogo), pode ser pulada, libera o site e não repete na sessão', async () => {
   await reset(); await setOpen(`now() + interval '1 day'`);
   const page = await newPage({ intro: true });
   await page.goto(base);
   await page.locator('#intro canvas').waitFor();
-  await sleep(2600);
-  const warm = await page.evaluate(() => { const c = document.querySelector('#intro canvas'); const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 0; i < d.length; i += 16) { if (d[i] > 200 && d[i + 1] > 60 && d[i + 2] < 130) n++; } return n; });
-  ok(warm > 300, 'pixels de fogo no canvas: ' + warm);
+  await sleep(2000);
+  const sample = () => page.evaluate(() => { const c = document.querySelector('#intro canvas'); const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let white = 0, fire = 0; for (let i = 0; i < d.length; i += 16) { if (d[i] > 200 && d[i + 1] > 200 && d[i + 2] > 200) white++; if (d[i] > 200 && d[i + 1] > 90 && d[i + 2] < 90) fire++; } return { white, fire }; });
+  const intact = await sample();
+  ok(intact.white > 1500, 'nome legível (pixels brancos): ' + intact.white);
+  await sleep(3000); // a onda de desintegração já passou da metade
+  const dust = await sample();
+  ok(dust.white < intact.white * 0.75, 'o nome está se desfazendo: ' + intact.white + ' → ' + dust.white);
+  ok(dust.fire < 40 && intact.fire < 40, 'sem efeito de fogo (laranja/amarelo): ' + dust.fire);
   ok(await page.getByRole('button', { name: 'Pular introdução' }).isVisible());
   eq(await page.evaluate(() => getComputedStyle(document.documentElement).overflow), 'hidden', 'rolagem travada durante a entrada');
   await page.getByRole('button', { name: 'Pular introdução' }).click();

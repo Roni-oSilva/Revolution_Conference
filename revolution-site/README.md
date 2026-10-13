@@ -8,7 +8,7 @@ Site real, responsivo e seguro da Revolution Conference (Next.js 15 + TypeScript
 
 | Área | O que faz |
 |---|---|
-| **Início** (`/`) | Banner, informações do evento, contagem regressiva (fuso configurável, padrão `America/Sao_Paulo`), **troca automática** de fase pré-evento → pós-abertura → encerrado **sem recarregar**, destaques, galeria (fotos do Google Drive) e botões para AO VIVO e MURAL. |
+| **Início** (`/`) | Banner, caixa de **vídeo ao vivo** (link do YouTube definido no painel), informações do evento (fuso configurável, padrão `America/Sao_Paulo`), **troca automática** de fase pré-evento → pós-abertura → encerrado **sem recarregar**, destaques, galeria (fotos do Google Drive) e botões para AO VIVO e MURAL. |
 | **Ao Vivo** (`/ao-vivo`) | Player do YouTube (só quando o admin liga a transmissão; sem autoplay), mensagem quando não há live, vídeos gravados por categoria/ordem, links para o YouTube. |
 | **Mural** (`/mural`, `/mural/[id]`) | Publicações oficiais, reações anônimas com contagem (Realtime + atualização periódica de reserva), compartilhar por link, paginação, estados de carregamento/erro/vazio. |
 | **Painel** (`/admin`) | Login (Supabase Auth), dashboard real, evento/home, mural (criar, editar, ordenar, ocultar, restaurar, excluir), mídia (Drive e YouTube), segurança (limites, abusos, admins), pré-visualização antes de publicar. |
@@ -21,7 +21,7 @@ revolution-site/
 ├─ app/                    rotas (App Router): públicas, /admin, /api
 │  ├─ api/reactions        POST (grava reação via service_role, só no servidor) · /mine · /api/time
 │  └─ admin/               login, painel (grupo "(panel)"), server actions (actions.ts)
-├─ components/             UI (PhaseGate, Countdown, Gallery, WallFeed…) e telas em components/views/
+├─ components/             UI (PhaseGate, Gallery, WallFeed…) e telas em components/views/
 ├─ lib/                    regra de negócio: urls, phase, tz, reactions, availability, data, admin/*
 │  └─ supabase/            clientes: public (anon), server (sessão), service (service_role), browser (realtime)
 ├─ supabase/migrations/    0001 esquema · 0002 funções/triggers · 0003 RLS · 0004 realtime

@@ -9,9 +9,9 @@ import { publicEnv } from '@/lib/env';
 import { isSafeHttpsUrl } from '@/lib/urls';
 import type { SiteSettings } from '@/lib/types';
 
-const title = localFont({ src: '../public/fonts/archivo-black.ttf', variable: '--font-title', display: 'swap', weight: '400' });
+const title = localFont({ src: '../public/fonts/anton-400.woff2', variable: '--font-title', display: 'swap', weight: '400' });
 const body = localFont({
-  src: [{ path: '../public/fonts/inter-300.ttf', weight: '300' }, { path: '../public/fonts/inter-400.ttf', weight: '400' }, { path: '../public/fonts/inter-600.ttf', weight: '600' }],
+  src: [{ path: '../public/fonts/poppins-300.woff2', weight: '300' }, { path: '../public/fonts/poppins-400.woff2', weight: '400' }, { path: '../public/fonts/poppins-600.woff2', weight: '600' }],
   variable: '--font-body', display: 'swap',
 });
 

@@ -4,10 +4,9 @@ import { getGallery, getHighlights, getSettings, getVideos } from '@/lib/data';
 import { Folder, type FolderItem } from '../Folders';
 import { slugify } from '@/lib/slug';
 import { parseIsoMs, type Phase } from '@/lib/phase';
-import { formatEventDate } from '@/lib/format';
-import { isSafeHttpsUrl } from '@/lib/urls';
+import { formatEventDate, formatShort } from '@/lib/format';
+import { isSafeHttpsUrl, youtubeEmbedUrl, youtubeWatchUrl } from '@/lib/urls';
 import { PhaseGate } from '../PhaseGate';
-import { Countdown } from '../Countdown';
 import { Gallery } from '../Gallery';
 import { StateBox } from '../States';
 import type { EventSettings } from '@/lib/types';
@@ -45,25 +44,40 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
   const liveHref = preview ? '/admin/preview/ao-vivo' : '/ao-vivo';
   const wallHref = preview ? '/admin/preview/mural' : '/mural';
 
-  const hero = (variant: Phase) => (
-    <section className="hero" aria-labelledby="home-title">
-      <div className="hero-bg" aria-hidden="true" />
-      {site.hero_image_url && isSafeHttpsUrl(site.hero_image_url) && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <div className="hero-img" aria-hidden="true"><img src={site.hero_image_url} alt="" fetchPriority="high" referrerPolicy="no-referrer" /></div>
-      )}
-      <div className="hero-in">
-        <span className="kicker">{variant === 'pre' ? 'Em breve' : variant === 'open' ? (live ? '● Ao vivo agora' : 'Começou') : 'Encerrada'}</span>
-        <h1 id="home-title">{variant === 'ended' ? <>Obrigado por <span className="red">viver</span></> : <>{event.name}</>}</h1>
-        {site.tagline && <p className="lead">{site.tagline}</p>}
-        {variant === 'pre' && (opensAt ? <Countdown targetMs={opensAt} /> : <p className="muted">Data de abertura a confirmar.</p>)}
-        <div className="btn-row">
-          <Link className={`btn ${variant === 'open' && live ? 'solid' : ''}`} href={liveHref}>{variant === 'open' && live ? 'Assistir ao vivo' : 'Ao vivo'}</Link>
-          <Link className="btn solid" href={wallHref}>Ver o mural</Link>
+  const nameLoop = site.site_title || event.name;
+  const hero = (variant: Phase) => {
+    const when = event.starts_at ? formatShort(event.starts_at, event.timezone) : '';
+    const place = event.location_name || '';
+    return (
+      <section className="hero big" aria-labelledby="home-title">
+        <div className="hero-bg" aria-hidden="true" />
+        <span className="orb o1" aria-hidden="true" /><span className="orb o2" aria-hidden="true" /><span className="orb o3" aria-hidden="true" />
+        {site.hero_image_url && isSafeHttpsUrl(site.hero_image_url) && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <div className="hero-img" aria-hidden="true"><img src={site.hero_image_url} alt="" fetchPriority="high" referrerPolicy="no-referrer" /></div>
+        )}
+        <div className="hero-in hero-grid">
+          <div className="hero-main">
+            <span className="kicker">{variant === 'pre' ? 'Em breve' : variant === 'open' ? (live ? '● Ao vivo agora' : 'Começou') : 'Encerrada'}</span>
+            <h1 id="home-title">{variant === 'ended' ? <>Obrigado por <span className="red">viver</span></> : <>{event.name}</>}</h1>
+            {site.tagline && <p className="lead">{site.tagline}</p>}
+            <div className="btn-row">
+              <Link className={`btn ${variant === 'open' && live ? 'solid' : ''}`} href={liveHref}>{variant === 'open' && live ? 'Assistir ao vivo' : 'Ao vivo'}</Link>
+              <Link className="btn solid" href={wallHref}>Ver o mural</Link>
+            </div>
+          </div>
+          <aside className="hero-card" aria-label="Status do evento">
+            <span className="kicker">{variant === 'pre' ? 'Próximo encontro' : variant === 'open' ? 'Agora' : 'Obrigado'}</span>
+            <p className="hc-big">{when || (variant === 'pre' ? 'Data a confirmar' : variant === 'open' ? (live ? 'Transmissão no ar' : 'Programação em andamento') : 'Até a próxima')}</p>
+            {place && <p className="hc-sub">{place}</p>}
+            {event.address && <p className="hc-sub muted">{event.address}</p>}
+            {variant === 'open' && live && <span className="badge live">● Ao vivo</span>}
+          </aside>
         </div>
-      </div>
-    </section>
-  );
+        <div className="marquee" aria-hidden="true"><div className="track">{Array.from({ length: 6 }, (_, i) => <span key={i}>{nameLoop} <i>•</i> {site.tagline || event.name} <i>•</i> </span>)}</div></div>
+      </section>
+    );
+  };
 
   const gallery = (g.data ?? []).map((m) => ({ id: m.id, fileId: m.drive_file_id, alt: m.alt || m.title, caption: m.caption || m.title, featured: m.is_featured, album: m.album }));
   const liveBase = preview ? '/admin/preview/ao-vivo' : '/ao-vivo';
@@ -84,6 +98,21 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
     <>
       <PhaseGate serverNow={serverNow} opensAt={opensAt} endsAt={endsAt} forcePhase={forcePhase} pre={hero('pre')} open={hero('open')} ended={hero('ended')} />
       <div className="wrap">
+        <section className="livebox glass" aria-labelledby="lb-title">
+          <div className="lb-head">
+            <h2 id="lb-title" className="section-title" style={{ margin: 0 }}>Vídeo ao vivo</h2>
+            {live ? <span className="badge live">● Ao vivo</span> : <span className="badge">Aguardando</span>}
+          </div>
+          {live ? (
+            <>
+              <div className="player"><iframe title="Transmissão ao vivo — Revolution Conference" src={youtubeEmbedUrl(event.stream_video_id!)} allow="encrypted-media; picture-in-picture; web-share" allowFullScreen loading="lazy" referrerPolicy="strict-origin-when-cross-origin" /></div>
+              <div className="links"><a className="btn small" href={youtubeWatchUrl(event.stream_video_id!)} target="_blank" rel="noopener noreferrer">Abrir no YouTube ↗</a></div>
+              {event.stream_note && <p className="muted">{event.stream_note}</p>}
+            </>
+          ) : (
+            <div className="player lb-empty"><div><strong>A transmissão aparecerá aqui</strong><span>Quando o AO VIVO começar, o vídeo do YouTube é exibido nesta caixa.</span>{site.youtube_channel_url && isSafeHttpsUrl(site.youtube_channel_url) && <a className="link-btn" href={site.youtube_channel_url} target="_blank" rel="noopener noreferrer">Ir ao canal no YouTube ↗</a>}</div></div>
+          )}
+        </section>
         <EventInfo event={event} />
         {hl.length > 0 && (
           <section aria-labelledby="dest" style={{ marginTop: 56 }}>

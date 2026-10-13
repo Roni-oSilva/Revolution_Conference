@@ -3,7 +3,7 @@
 Três camadas. Nenhum teste é marcado como aprovado sem ter sido executado; o resultado da última execução está no relatório final do projeto.
 
 ## 1. Unitários (`npm run test:unit` — Vitest)
-Funções puras e a rota de reações com o cliente do Supabase **simulado**: parsing/validação de URLs (Drive/YouTube/https), cálculo de fase e fusos (inclui horário de verão histórico), contagem regressiva, schemas dos formulários, rota `POST /api/reactions` (origem, tamanho, validação, mapeamento de erros, hash do IP, logs sem dados pessoais) e verificações de disponibilidade com `fetch` simulado.
+Funções puras e a rota de reações com o cliente do Supabase **simulado**: parsing/validação de URLs (Drive/YouTube/https), cálculo de fase e fusos (inclui horário de verão histórico), schemas dos formulários, rota `POST /api/reactions` (origem, tamanho, validação, mapeamento de erros, hash do IP, logs sem dados pessoais) e verificações de disponibilidade com `fetch` simulado.
 
 ## 2. Banco / RLS (`npm run test:db`)
 Aplica **as migrações reais** (`supabase/migrations`) em um Postgres de verdade (PGlite = Postgres compilado em WASM) com papéis `anon`, `authenticated` e `service_role` e funções `auth.uid()/auth.role()` equivalentes às do Supabase. Verifica: leitura pública só do publicado, bloqueio de escrita para visitantes e para usuários sem permissão, separação owner/editor, último owner, constraints de URL/fuso/unicidade, função de reação (adicionar, trocar, remover, idempotência, emoji inválido, post oculto, limites por ID/IP, reações desativadas), contagens inalteráveis por clientes, cascatas.
@@ -18,7 +18,7 @@ Aplica **as migrações reais** (`supabase/migrations`) em um Postgres de verdad
 - Todas as consultas diretas dos testes passam por uma trava que as impede de se intercalar com o PostgREST (o PGlite tem uma única sessão).
 
 ### Cenários cobertos (E2E)
-Navegação e abas · responsividade (360/768/1280, celular, alvos de toque) · teclado e diálogos · contagem correta · troca de fase automática sem recarregar · abrir/atualizar depois do horário · relógio do visitante errado · aba suspensa · fase encerrada / sem data · vídeos e links inválidos · Drive (galeria, fallback de imagem, cadastro pelo painel) · CRUD do painel (mural, mídia, vídeos, evento) · pré-visualização · bloqueio de postagem por visitantes (API real) · reações (registro, persistência, troca, remoção, duplicidade, abuso/429, desativadas) · rotas `/admin` (sem login, usuário comum, forjado) · RLS pela API · erros de rede e Supabase fora do ar · segredos não vazam.
+Navegação e abas · responsividade (360/768/1280, celular, alvos de toque) · teclado e diálogos · sem contagem regressiva · troca de fase automática sem recarregar · abrir/atualizar depois do horário · relógio do visitante errado · aba suspensa · fase encerrada / sem data · vídeos e links inválidos · Drive (galeria, fallback de imagem, cadastro pelo painel) · CRUD do painel (mural, mídia, vídeos, evento) · pré-visualização · bloqueio de postagem por visitantes (API real) · reações (registro, persistência, troca, remoção, duplicidade, abuso/429, desativadas) · rotas `/admin` (sem login, usuário comum, forjado) · RLS pela API · erros de rede e Supabase fora do ar · segredos não vazam.
 
 ## Como rodar
 ```bash
