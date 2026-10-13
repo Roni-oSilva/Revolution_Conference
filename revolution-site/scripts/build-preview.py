@@ -14,6 +14,7 @@ css = open('app/globals.css').read()
 # variáveis de fonte do Next → fontes embutidas
 css = css.replace("var(--font-title), Anton", "Anton").replace("var(--font-body), Poppins", "Poppins")
 html = open('scripts/preview-template.html').read()
+html = html.replace('/*LOGO_XL*/', 'data:image/png;base64,' + b64('public/logo.png')).replace('/*LOGO_SM*/', 'data:image/png;base64,' + b64('public/logo-sm.png'))
 html = html.replace('/*FONTS*/', fonts).replace('/*APPCSS*/', css)
 html = html.replace('/*INTROJS*/', open('scripts/preview-intro.js').read())
 open(sys.argv[1], 'w', encoding='utf8').write(html)
