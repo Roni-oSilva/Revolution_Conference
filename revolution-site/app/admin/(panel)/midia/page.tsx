@@ -29,7 +29,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ m
       <div className="card"><p style={{ marginTop: 0 }}>No Drive: clique com o botão direito na foto → <strong>Compartilhar</strong> → “Qualquer pessoa com o link” (Leitor) → copiar link. Pastas não são aceitas — cole o link de cada arquivo. O site só exibe fotos que o Drive entrega publicamente.</p>
         <form action={addMediaAction} className="f">
           <Field label="Link do arquivo no Drive" name="url" type="url" required wide placeholder="https://drive.google.com/file/d/…/view" />
-          <Field label="Título" name="title" max={120} /><Field label="Texto alternativo (acessibilidade)" name="alt" max={200} /><Field label="Legenda" name="caption" max={300} wide />
+          <Field label="Título" name="title" max={120} /><Field label="Álbum (ex.: Dia 1)" name="album" max={60} help="Aparece nas pastas da home e no filtro da galeria." /><Field label="Texto alternativo (acessibilidade)" name="alt" max={200} /><Field label="Legenda" name="caption" max={300} wide />
           <div className="field wide"><button className="btn solid small" type="submit">Adicionar foto (verifica se está pública)</button></div>
         </form></div>
       {ml.length === 0 && <div className="state"><strong>Nenhuma foto cadastrada</strong></div>}
@@ -50,7 +50,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ m
           <details style={{ marginTop: 10 }}><summary className="btn small" style={{ listStyle: 'none' }}>Editar</summary>
             <form action={updateMediaAction} className="f" style={{ marginTop: 10 }}>
               <input type="hidden" name="id" value={x.id} />
-              <Field label="Título" name="title" defaultValue={x.title} /><Field label="Texto alternativo" name="alt" defaultValue={x.alt} /><Field label="Legenda" name="caption" defaultValue={x.caption} wide />
+              <Field label="Título" name="title" defaultValue={x.title} /><Field label="Álbum" name="album" defaultValue={x.album} max={60} /><Field label="Texto alternativo" name="alt" defaultValue={x.alt} /><Field label="Legenda" name="caption" defaultValue={x.caption} wide />
               <Field label="Posição" name="position" type="number" defaultValue={x.position} />
               <Check label="Publicada" name="is_published" checked={x.is_published} /><Check label="Foto de destaque" name="is_featured" checked={x.is_featured} />
               <div className="field wide"><button className="btn solid small" type="submit">Salvar</button></div>

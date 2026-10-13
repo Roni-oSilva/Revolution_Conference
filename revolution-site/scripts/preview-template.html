@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="pt-BR" class="lock">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prévia — Revolution Conference</title>
+<style>
+/*FONTS*/
+/*APPCSS*/
+html.lock { overflow: hidden; }
+.tag-preview { position: fixed; left: 50%; bottom: 12px; translate: -50% 0; z-index: 70; font: 600 11px/1 Inter, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: #fff; padding: 9px 14px; border-radius: 99px; background: rgba(0,0,0,.65); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: 0 0 0 1px rgba(255,255,255,.18); pointer-events: none; text-align: center; max-width: 94vw; }
+.ph-tile { border: 0; border-radius: 16px; aspect-ratio: 4/3; display: grid; place-items: center; color: rgba(255,255,255,.75); font: 600 11px Inter, sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+.ph-tile:nth-child(3n+1) { background: radial-gradient(at 20% 15%, rgba(239,74,43,.8), transparent 60%), linear-gradient(135deg, #0b0d10, #1b2a31); }
+.ph-tile:nth-child(3n+2) { background: radial-gradient(at 80% 20%, rgba(251,231,210,.55), transparent 55%), linear-gradient(135deg, #3e2850, #120c18); }
+.ph-tile:nth-child(3n) { background: radial-gradient(at 70% 80%, rgba(179,80,47,.8), transparent 60%), linear-gradient(135deg, #16252c, #07090c); }
+.ph-tile.big { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
+[data-view] { display: none; } [data-view].on { display: block; }
+.post .reacts .react { cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="intro" role="presentation"><canvas id="introCanvas" aria-hidden="true"></canvas><button type="button" class="intro-skip" id="introSkip">Pular introdução</button></div>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header class="top">
+  <a href="#/" class="brand" aria-label="Revolution Conference — início"><img src="__LOGO__" alt="" width="34" height="34"></a>
+  <nav class="tabs" aria-label="Principal"><a href="#/" data-tab="inicio">Início</a><a href="#/ao-vivo" data-tab="ao-vivo">Ao Vivo</a><a href="#/mural" data-tab="mural">Mural</a></nav>
+</header>
+<main id="conteudo" tabindex="-1">
+
+<!-- ═════════ INÍCIO ═════════ -->
+<div data-view="inicio">
+  <section class="hero" aria-labelledby="home-title">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-in" style="padding-top:clamp(110px,18vh,190px)">
+      <span class="kicker">Em breve</span>
+      <h1 id="home-title">Revolution<br>Conference</h1>
+      <p class="lead">Apaixonados pela Presença</p>
+      <div class="count" role="timer" id="count"><div><b id="cd">00</b><span>Dias</span></div><div><b id="ch">00</b><span>Horas</span></div><div><b id="cm">00</b><span>Min</span></div><div><b id="cs">00</b><span>Seg</span></div></div>
+      <div class="btn-row"><a class="btn" href="#/ao-vivo">Ao vivo</a><a class="btn solid" href="#/mural">Ver o mural</a></div>
+    </div>
+  </section>
+  <div class="wrap">
+    <div class="info">
+      <div class="card"><span class="kicker">Quando</span><h2 style="margin-top:10px">Sábado, 17 de outubro</h2><p class="muted" style="margin:0">Horário de Brasília (America/Sao_Paulo)</p></div>
+      <div class="card"><span class="kicker">Onde</span><h2 style="margin-top:10px">Local a confirmar</h2><p class="muted" style="margin:0">Endereço e mapa aparecem aqui quando o admin cadastrar.</p></div>
+      <div class="card"><span class="kicker">Sobre</span><p style="margin:10px 0 0">Texto do evento escrito no painel.</p></div>
+    </div>
+    <section class="glow-section" style="margin-top:64px">
+      <div class="folders-head"><span class="kicker">Dois dias</span><h2 class="section-title" style="margin-top:12px">Reviva cada momento</h2><p>Vídeos e fotos oficiais, reunidos em duas pastas.</p></div>
+      <div class="fs">
+        <div class="fo v"><div class="bk"></div><div class="fl"><a href="#/ao-vivo" style="--i:0" tabindex="-1">Pregações<small>2 vídeos</small></a><a href="#/ao-vivo" style="--i:1" tabindex="-1">Louvor<small>1 vídeo</small></a><a href="#/ao-vivo" style="--i:2" tabindex="-1">Ao vivo<small>YouTube</small></a></div><button class="fr" aria-expanded="false"><b>Vídeos</b><i>3 itens</i></button></div>
+        <div class="fo f"><div class="bk"></div><div class="fl"><a href="#galeria" style="--i:0" tabindex="-1">Dia 1<small>4 fotos</small></a><a href="#galeria" style="--i:1" tabindex="-1">Dia 2<small>2 fotos</small></a><a href="#galeria" style="--i:2" tabindex="-1">Galeria completa<small>Drive</small></a></div><button class="fr" aria-expanded="false"><b>Fotos</b><i>6 itens</i></button></div>
+      </div>
+    </section>
+    <section id="galeria" style="margin-top:40px;scroll-margin-top:90px">
+      <h2 class="section-title">Galeria</h2>
+      <div class="chips"><button class="chip" aria-pressed="true">Todas</button><button class="chip" aria-pressed="false">Dia 1</button><button class="chip" aria-pressed="false">Dia 2</button></div>
+      <div class="gallery"><div class="ph-tile big">Foto de exemplo</div><div class="ph-tile">Foto</div><div class="ph-tile">Foto</div><div class="ph-tile">Foto</div><div class="ph-tile">Foto</div></div>
+    </section>
+  </div>
+</div>
+
+<!-- ═════════ AO VIVO ═════════ -->
+<div data-view="ao-vivo"><div class="wrap">
+  <span class="kicker">Transmissão</span><h1 class="page-title">Ao <span class="red">vivo</span></h1>
+  <div class="state"><strong>Nenhuma transmissão no momento</strong><p>A transmissão aparecerá aqui quando o AO VIVO começar.</p></div>
+  <section style="margin-top:56px"><h2 class="section-title">Vídeos gravados</h2>
+    <h3 class="cat" id="pregacoes">Pregações</h3>
+    <div class="vgrid">
+      <article class="vcard"><div class="vthumb"><div class="ph-tile" style="aspect-ratio:16/9;border-radius:0;height:100%">Miniatura</div><span class="play">▶</span></div><div class="vmeta"><span class="badge">Pregações</span><h3>Título do vídeo</h3><p>Descrição curta escrita no painel.</p><a class="link-btn" href="#">Abrir no YouTube ↗</a></div></article>
+      <article class="vcard"><div class="vthumb"><div class="ph-tile" style="aspect-ratio:16/9;border-radius:0;height:100%">Miniatura</div><span class="play">▶</span></div><div class="vmeta"><span class="badge">Pregações</span><h3>Segundo vídeo</h3><p>Ordem e categoria definidas pelo admin.</p><a class="link-btn" href="#">Abrir no YouTube ↗</a></div></article>
+      <article class="vcard"><div class="vthumb"><div class="ph-tile" style="aspect-ratio:16/9;border-radius:0;height:100%">Miniatura</div><span class="play">▶</span></div><div class="vmeta"><span class="badge">Louvor</span><h3>Momento de louvor</h3><p>Sem autoplay: só toca quando você pedir.</p><a class="link-btn" href="#">Abrir no YouTube ↗</a></div></article>
+    </div>
+  </section>
+</div></div>
+
+<!-- ═════════ MURAL ═════════ -->
+<div data-view="mural"><div class="wrap">
+  <span class="kicker">Publicações oficiais</span><h1 class="page-title">O <span class="red">mural</span></h1>
+  <div class="feed" id="feed"></div>
+  <nav class="pager"><span></span><span class="muted">Página 1 de 1</span><span></span></nav>
+</div></div>
+
+</main>
+<footer class="foot"><div class="foot-in"><span>© Revolution Conference</span><span>Política de privacidade</span></div></footer>
+<div class="tag-preview">Prévia · conteúdo de exemplo · o site real usa os dados do painel</div>
+<script>
+// abas
+var views = { '': 'inicio', '/': 'inicio', '/ao-vivo': 'ao-vivo', '/mural': 'mural' };
+function route() {
+  var h = location.hash.replace(/^#/, ''); if (h === 'galeria') { return; }
+  var v = views[h] || 'inicio';
+  document.querySelectorAll('[data-view]').forEach(function (e) { e.classList.toggle('on', e.dataset.view === v); });
+  document.querySelectorAll('[data-tab]').forEach(function (a) { if (a.dataset.tab === v) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  scrollTo(0, 0);
+}
+addEventListener('hashchange', route); route();
+// contagem para 17/10/2026 00:00 (Brasília)
+var target = Date.parse('2026-10-17T00:00:00-03:00'), pad = function (n) { return String(n).padStart(2, '0'); };
+function tick() { var s = Math.max(0, Math.floor((target - Date.now()) / 1000)); cd.textContent = pad(Math.floor(s / 86400)); ch.textContent = pad(Math.floor(s / 3600) % 24); cm.textContent = pad(Math.floor(s / 60) % 60); cs.textContent = pad(s % 60); }
+setInterval(tick, 500); tick();
+// pastas
+document.querySelectorAll('.fr').forEach(function (b) { b.onclick = function () { var o = b.parentNode.classList.toggle('open'); b.setAttribute('aria-expanded', o); b.parentNode.querySelectorAll('.fl a').forEach(function (a) { a.tabIndex = o ? 0 : -1; }); }; });
+// galeria: filtros (visual)
+document.querySelectorAll('.chips .chip').forEach(function (c) { c.onclick = function () { c.parentNode.querySelectorAll('.chip').forEach(function (x) { x.setAttribute('aria-pressed', x === c); }); }; });
+// mural de exemplo com reações locais
+var EM = ['❤️', '🙌', '🔥', '👏', '😍'], LB = ['Curtir', 'Aleluia', 'Fogo', 'Palmas', 'Amei'];
+var posts = [
+  { t: 'Bem-vindos à Revolution', b: 'Texto de exemplo de uma publicação oficial. O administrador escreve, ordena, oculta e publica pelo painel.', hl: true, c: [12, 4, 9, 7, 3] },
+  { t: 'Programação do primeiro dia', b: 'Outra publicação de exemplo.\nQuebras de linha são preservadas e o texto nunca executa HTML.', c: [5, 2, 6, 1, 0] },
+  { t: 'Aviso importante', b: 'Reações são anônimas: um ID aleatório no navegador, uma reação por publicação — dá para trocar ou remover.', c: [2, 1, 0, 3, 1] }
+];
+var feed = document.getElementById('feed');
+posts.forEach(function (p, pi) {
+  var mine = null, counts = p.c.slice();
+  var el = document.createElement('article'); el.className = 'post' + (p.hl ? ' hl' : '');
+  var meta = '<div class="meta">' + (p.hl ? '<span class="badge">Destaque</span>' : '') + '<time>13 out, 19:30</time></div>';
+  el.innerHTML = '<div class="post-in">' + meta + '<h2></h2><p class="body"></p><div class="reacts" role="group" aria-label="Reações"></div><div class="post-actions"><button class="btn small" type="button">Compartilhar</button></div></div>';
+  el.querySelector('h2').textContent = p.t; el.querySelector('.body').textContent = p.b;
+  var box = el.querySelector('.reacts');
+  EM.forEach(function (e, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'react'; b.setAttribute('aria-pressed', 'false');
+    function draw() { b.setAttribute('aria-label', LB[i] + ' (' + counts[i] + ')'); b.innerHTML = '<span class="e" aria-hidden="true">' + e + '</span><span>' + counts[i] + '</span>'; b.setAttribute('aria-pressed', mine === i); }
+    b.onclick = function () { if (mine !== null) { counts[mine]--; } if (mine === i) mine = null; else { mine = i; counts[i]++; } box.querySelectorAll('.react').forEach(function (x) { x.draw && x.draw(); }); };
+    b.draw = draw; draw(); box.appendChild(b);
+  });
+  feed.appendChild(el);
+});
+/*INTROJS*/
+</script>
+</body></html>

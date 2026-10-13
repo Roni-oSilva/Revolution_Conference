@@ -142,7 +142,7 @@ export async function addMediaAction(fd: FormData) {
   if (!d.ok) return back('/admin/midia', d.reason === 'folder' ? 'folder' : 'invalid_url');
   const availability = await checkDriveImage(d.fileId);
   const { error } = await client.from('media').insert({
-    original_url: p.data.url, drive_file_id: d.fileId, title: p.data.title, alt: p.data.alt, caption: p.data.caption,
+    original_url: p.data.url, drive_file_id: d.fileId, title: p.data.title, alt: p.data.alt, caption: p.data.caption, album: p.data.album,
     is_published: availability === 'ok', availability, checked_at: new Date().toISOString(), position: 9999,
   });
   if (error) { logger.error('admin.media_add', { code: error.code }); return back('/admin/midia', dbCode(error)); }

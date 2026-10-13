@@ -15,8 +15,8 @@ export const postSchema = z.object({
   status: z.enum(['draft', 'published', 'hidden']), is_highlight: bool, image_media_id: uuidOrNull, position: int(-9999, 9999),
 });
 
-export const mediaSchema = z.object({ url: z.string().trim().max(2048), title: text(120), alt: text(200), caption: text(300) });
-export const mediaEditSchema = z.object({ title: text(120), alt: text(200), caption: text(300), position: int(-9999, 9999), is_featured: bool, is_published: bool });
+export const mediaSchema = z.object({ url: z.string().trim().max(2048), title: text(120), alt: text(200), caption: text(300), album: text(60) });
+export const mediaEditSchema = z.object({ title: text(120), alt: text(200), caption: text(300), album: text(60), position: int(-9999, 9999), is_featured: bool, is_published: bool });
 
 export const videoSchema = z.object({ url: z.string().trim().max(2048), title: z.string().trim().min(1).max(160), description: text(1000), category: z.string().trim().min(1).max(60) });
 export const videoEditSchema = z.object({ title: z.string().trim().min(1).max(160), description: text(1000), category: z.string().trim().min(1).max(60), position: int(-9999, 9999), is_published: bool });

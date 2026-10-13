@@ -31,6 +31,8 @@ const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH 
 const EXTERNAL = /(drive\.google\.com|googleusercontent|ytimg|youtube|fonts\.g)/;
 async function newPage(opts = {}) {
   const ctx = await browser.newContext({ viewport: opts.viewport ?? { width: 1280, height: 800 }, isMobile: !!opts.mobile, hasTouch: !!opts.mobile, permissions: ['clipboard-read', 'clipboard-write'], reducedMotion: opts.reducedMotion });
+  // a entrada com fogo é testada à parte; nos demais testes ela é marcada como "já vista" nesta sessão
+  if (!opts.intro) await ctx.addInitScript(`try{sessionStorage.setItem('rv_intro_seen','1')}catch(e){}`);
   if (opts.init) await ctx.addInitScript(opts.init);
   const page = await ctx.newPage();
   page.problems = [];
@@ -353,6 +355,77 @@ await test('destaques aparecem na home com link para a publicação', async () =
   eq(await page.locator('#dest ~ .info h3').allTextContents(), ['Em destaque']);
   await page.getByRole('link', { name: /Abrir publicação/ }).click();
   await waitFor(() => page.url().endsWith(`/mural/${id}`));
+  await done(page);
+});
+
+// ═════════════════════════ 4b. Entrada (fogo) e pastas ═════════════════════════
+group('Entrada com o nome pegando fogo e pastas');
+await test('entrada: desenha fogo no canvas, pode ser pulada, libera o site e não repete na sessão', async () => {
+  await reset(); await setOpen(`now() + interval '1 day'`);
+  const page = await newPage({ intro: true });
+  await page.goto(base);
+  await page.locator('#intro canvas').waitFor();
+  await sleep(2600);
+  const warm = await page.evaluate(() => { const c = document.querySelector('#intro canvas'); const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 0; i < d.length; i += 16) { if (d[i] > 200 && d[i + 1] > 60 && d[i + 2] < 130) n++; } return n; });
+  ok(warm > 300, 'pixels de fogo no canvas: ' + warm);
+  ok(await page.getByRole('button', { name: 'Pular introdução' }).isVisible());
+  eq(await page.evaluate(() => getComputedStyle(document.documentElement).overflow), 'hidden', 'rolagem travada durante a entrada');
+  await page.getByRole('button', { name: 'Pular introdução' }).click();
+  await waitFor(async () => (await page.locator('#intro').count()) === 0, 6000, 150, 'entrada sumir');
+  eq(await page.evaluate(() => sessionStorage.getItem('rv_intro_seen')), '1');
+  await page.getByRole('heading', { level: 1 }).first().waitFor();
+  await page.reload(); await sleep(900);
+  eq(await page.locator('#intro').count(), 0, 'não repete na mesma sessão');
+  noProblems(page);
+  await done(page);
+});
+
+await test('entrada: termina sozinha (≈6 s) e revela o site', async () => {
+  const page = await newPage({ intro: true });
+  await page.goto(base);
+  await page.locator('#intro').waitFor();
+  const t0 = Date.now();
+  await waitFor(async () => (await page.locator('#intro').count()) === 0, 12000, 200, 'fim automático');
+  const secs = (Date.now() - t0) / 1000;
+  ok(secs > 3 && secs < 10, 'duração ' + secs);
+  ok(await page.locator('.hero').isVisible());
+  await done(page);
+});
+
+await test('entrada: não aparece com movimento reduzido nem fora da página inicial', async () => {
+  const a = await newPage({ intro: true, reducedMotion: 'reduce' });
+  await a.goto(base); await waitFor(async () => (await a.locator('#intro').count()) === 0, 4000, 100, 'sem entrada');
+  await done(a);
+  const b = await newPage({ intro: true });
+  await b.goto(`${base}/mural`); await b.waitForLoadState('networkidle'); eq(await b.locator('#intro').count(), 0);
+  await done(b);
+});
+
+await test('pastas Vídeos e Fotos: abrem, só então os atalhos ficam focáveis, e levam às categorias/álbuns', async () => {
+  await reset(); await setOpen(`now() + interval '1 day'`);
+  const v = (title, id, cat) => db.query(`insert into public.videos (title, url, youtube_id, category, availability) values ($1,$2,$3,$4,'ok')`, [title, `https://youtu.be/${id}`, id, cat]);
+  await v('V1', 'aaaaaaaaaaa', 'Pregações'); await v('V2', 'bbbbbbbbbbb', 'Pregações'); await v('V3', 'ccccccccccc', 'Melhores momentos');
+  const m = (id, album) => db.query(`insert into public.media (original_url, drive_file_id, is_published, availability, album) values ($1,$2,true,'ok',$3)`, [`https://drive.google.com/file/d/${id}/view`, id, album]);
+  await m('1111111111AAAA', 'Dia 1'); await m('2222222222BBBB', 'Dia 1'); await m('3333333333CCCC', 'Dia 2');
+  const page = await newPage();
+  await page.goto(base);
+  const folderV = page.locator('.fo.v'), folderF = page.locator('.fo.f');
+  eq(await folderV.locator('.fr i').textContent(), '3 itens'); eq(await folderF.locator('.fr i').textContent(), '3 itens');
+  eq(await folderV.locator('.fl a').first().getAttribute('tabindex'), '-1', 'fechada: atalhos fora da ordem de tabulação');
+  await folderV.getByRole('button', { name: /Vídeos/ }).click();
+  eq(await folderV.locator('.fr').getAttribute('aria-expanded'), 'true');
+  eq(await folderV.locator('.fl a').first().getAttribute('tabindex'), '0');
+  eq(await folderV.locator('.fl a').allTextContents(), ['Pregações2 vídeos', 'Melhores momentos1 vídeo', 'Ao vivoYouTube']);
+  eq(await folderV.locator('.fl a').first().getAttribute('href'), '/ao-vivo#pregacoes');
+  await folderF.getByRole('button', { name: /Fotos/ }).click();
+  eq(await folderF.locator('.fl a').first().getAttribute('href'), '/?album=Dia%201#galeria');
+  await folderF.locator('.fl a').first().click({ force: true });
+  await page.waitForURL(/album=Dia%201/);
+  await waitFor(async () => (await page.locator('.gallery button.g').count()) === 2, 8000, 150, 'só as 2 fotos do Dia 1');
+  eq(await page.locator('.chip[aria-pressed="true"]').textContent(), 'Dia 1');
+  await page.locator('.chip', { hasText: 'Todas' }).click();
+  await waitFor(async () => (await page.locator('.gallery button.g').count()) === 3);
+  await page.goto(`${base}/ao-vivo#pregacoes`); await page.locator('#pregacoes').waitFor();
   await done(page);
 });
 

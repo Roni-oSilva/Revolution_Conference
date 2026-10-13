@@ -51,7 +51,7 @@ describe('POST /api/reactions', () => {
   });
   it('não grava IP nem ID nos logs', async () => {
     const out: string[] = [];
-    const spies = (['log', 'warn', 'error'] as const).map((m) => vi.spyOn(console, m).mockImplementation((s: unknown) => { out.push(String(s)); }));
+    const spies = (['log', 'warn', 'error'] as const).map((m) => vi.spyOn(console, m).mockImplementation((...a: unknown[]) => { out.push(String(a[0])); }));
     await handleReactionPost(mk(valid), { service: svc().service, salt: 's' });
     await handleReactionPost(mk(valid), { service: svc(null, { message: 'falha' }).service, salt: 's' });
     spies.forEach((s) => s.mockRestore());

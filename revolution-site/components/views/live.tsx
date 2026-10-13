@@ -3,6 +3,7 @@ import { getSettings, getVideos } from '@/lib/data';
 import { youtubeEmbedUrl, youtubeWatchUrl, isSafeHttpsUrl } from '@/lib/urls';
 import { VideoCard } from '../VideoCard';
 import { StateBox } from '../States';
+import { slugify } from '@/lib/slug';
 import type { EventSettings } from '@/lib/types';
 
 interface ViewOpts { client: SupabaseClient; preview?: boolean }
@@ -42,7 +43,7 @@ export async function LiveView({ client, preview = false }: ViewOpts) {
           : videos.length === 0 ? <StateBox title="Ainda não há vídeos">As gravações aparecerão aqui.</StateBox>
           : [...byCat.entries()].map(([cat, list]) => (
             <div key={cat}>
-              <h3 className="cat">{cat}</h3>
+              <h3 className="cat" id={slugify(cat)} style={{ scrollMarginTop: 90 }}>{cat}</h3>
               <div className="vgrid">{list.map((x) => <VideoCard key={x.id} id={x.id} youtubeId={x.youtube_id} title={x.title} description={x.description} category={x.category} />)}</div>
             </div>
           ))}

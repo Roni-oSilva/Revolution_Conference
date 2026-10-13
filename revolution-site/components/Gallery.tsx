@@ -3,9 +3,12 @@ import { useEffect, useRef, useState } from 'react';
 import { DriveImage } from './DriveImage';
 import { driveThumbUrl } from '@/lib/urls';
 
-export interface GalleryItem { id: string; fileId: string; alt: string; caption: string; featured: boolean }
+export interface GalleryItem { id: string; fileId: string; alt: string; caption: string; featured: boolean; album: string }
 
-export function Gallery({ items }: { items: GalleryItem[] }) {
+export function Gallery({ items: all, initialAlbum = '' }: { items: GalleryItem[]; initialAlbum?: string }) {
+  const albums = [...new Set(all.map((i) => i.album).filter(Boolean))];
+  const [album, setAlbum] = useState(albums.includes(initialAlbum) ? initialAlbum : '');
+  const items = album ? all.filter((i) => i.album === album) : all;
   const [open, setOpen] = useState<number | null>(null);
   const [broken, setBroken] = useState(false);
   const ref = useRef<HTMLDialogElement>(null);
@@ -22,6 +25,11 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
 
   return (
     <>
+      {albums.length > 0 && (
+        <div className="chips" role="group" aria-label="Álbuns">
+          {['', ...albums].map((a) => <button key={a || 'todas'} type="button" className="chip" aria-pressed={album === a} onClick={() => { setAlbum(a); setOpen(null); }}>{a || 'Todas'}</button>)}
+        </div>
+      )}
       <ul className="gallery" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
         {items.map((it, i) => (
           <li key={it.id} style={{ display: 'contents' }}>

@@ -15,7 +15,7 @@ export interface EventSettings {
   stream_enabled: boolean; stream_url: string | null; stream_video_id: string | null; stream_note: string; updated_at: string;
 }
 export interface MediaRow {
-  id: string; original_url: string; drive_file_id: string; title: string; alt: string; caption: string; position: number;
+  id: string; original_url: string; drive_file_id: string; title: string; alt: string; caption: string; album: string; position: number;
   is_featured: boolean; is_published: boolean; availability: Availability; checked_at: string | null; created_at: string;
 }
 export interface VideoRow {

@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { getGallery, getHighlights, getSettings } from '@/lib/data';
+import { getGallery, getHighlights, getSettings, getVideos } from '@/lib/data';
+import { Folder, type FolderItem } from '../Folders';
+import { slugify } from '@/lib/slug';
 import { parseIsoMs, type Phase } from '@/lib/phase';
 import { formatEventDate } from '@/lib/format';
 import { isSafeHttpsUrl } from '@/lib/urls';
@@ -10,7 +12,7 @@ import { Gallery } from '../Gallery';
 import { StateBox } from '../States';
 import type { EventSettings } from '@/lib/types';
 
-interface ViewOpts { client: SupabaseClient; preview?: boolean; forcePhase?: Phase }
+interface ViewOpts { client: SupabaseClient; preview?: boolean; forcePhase?: Phase; album?: string }
 const streamReady = (e: EventSettings) => e.stream_enabled && !!e.stream_video_id;
 
 function EventInfo({ event }: { event: EventSettings }) {
@@ -31,11 +33,11 @@ function EventInfo({ event }: { event: EventSettings }) {
   );
 }
 
-export async function HomeView({ client, preview = false, forcePhase }: ViewOpts) {
+export async function HomeView({ client, preview = false, forcePhase, album = '' }: ViewOpts) {
   const s = await getSettings(client);
   if (!s.ok) return <div className="wrap"><StateBox title="Não foi possível carregar o site" kind="error"><p>Tente novamente em instantes.</p></StateBox></div>;
   const { site, event } = s.data;
-  const [g, h] = await Promise.all([getGallery(client, preview, 24), getHighlights(client, preview)]);
+  const [g, h, vids] = await Promise.all([getGallery(client, preview, 60), getHighlights(client, preview), getVideos(client, preview)]);
   const serverNow = Date.now();
   const opensAt = parseIsoMs(event.opens_at ?? event.starts_at);
   const endsAt = parseIsoMs(event.ends_at);
@@ -63,7 +65,19 @@ export async function HomeView({ client, preview = false, forcePhase }: ViewOpts
     </section>
   );
 
-  const gallery = (g.data ?? []).map((m) => ({ id: m.id, fileId: m.drive_file_id, alt: m.alt || m.title, caption: m.caption || m.title, featured: m.is_featured }));
+  const gallery = (g.data ?? []).map((m) => ({ id: m.id, fileId: m.drive_file_id, alt: m.alt || m.title, caption: m.caption || m.title, featured: m.is_featured, album: m.album }));
+  const liveBase = preview ? '/admin/preview/ao-vivo' : '/ao-vivo';
+  const cats = new Map<string, number>();
+  for (const v of vids.data ?? []) cats.set(v.category, (cats.get(v.category) ?? 0) + 1);
+  const videoItems: FolderItem[] = [...cats.entries()].slice(0, 2).map(([c, n]) => ({ label: c, hint: `${n} vídeo${n > 1 ? 's' : ''}`, href: `${liveBase}#${slugify(c)}` }));
+  videoItems.push({ label: 'Ao vivo', hint: 'YouTube', href: liveBase });
+  const albumCount = new Map<string, number>();
+  for (const m of gallery) if (m.album) albumCount.set(m.album, (albumCount.get(m.album) ?? 0) + 1);
+  const homeBase = preview ? '/admin/preview/inicio' : '/';
+  const photoItems: FolderItem[] = [...albumCount.entries()].slice(0, 2).map(([a, n]) => ({ label: a, hint: `${n} foto${n > 1 ? 's' : ''}`, href: `${homeBase}?album=${encodeURIComponent(a)}#galeria` }));
+  photoItems.push({ label: 'Galeria completa', hint: 'Drive', href: '#galeria' });
+  const nVideos = (vids.data ?? []).length;
+  const plural = (n: number) => `${n} ${n === 1 ? 'item' : 'itens'}`;
   const hl = h.data ?? [];
 
   return (
@@ -86,9 +100,16 @@ export async function HomeView({ client, preview = false, forcePhase }: ViewOpts
             </div>
           </section>
         )}
-        <section aria-labelledby="gal" style={{ marginTop: 56 }}>
+        <section aria-labelledby="pastas" className="glow-section" style={{ marginTop: 64 }}>
+          <div className="folders-head"><span className="kicker">Dois dias</span><h2 id="pastas" className="section-title" style={{ marginTop: 12 }}>Reviva cada momento</h2><p>Vídeos e fotos oficiais, reunidos em duas pastas.</p></div>
+          <div className="fs">
+            <Folder kind="v" title="Vídeos" count={plural(nVideos)} items={videoItems} />
+            <Folder kind="f" title="Fotos" count={plural(gallery.length)} items={photoItems} />
+          </div>
+        </section>
+        <section id="galeria" aria-labelledby="gal" style={{ marginTop: 40, scrollMarginTop: 90 }}>
           <h2 id="gal" className="section-title">Galeria</h2>
-          {!g.ok ? <StateBox title="Não foi possível carregar a galeria" kind="error" /> : gallery.length > 0 ? <Gallery items={gallery} /> : <StateBox title="Fotos em breve">As fotos oficiais aparecerão aqui.</StateBox>}
+          {!g.ok ? <StateBox title="Não foi possível carregar a galeria" kind="error" /> : gallery.length > 0 ? <Gallery items={gallery} initialAlbum={album} /> : <StateBox title="Fotos em breve">As fotos oficiais aparecerão aqui.</StateBox>}
         </section>
       </div>
     </>

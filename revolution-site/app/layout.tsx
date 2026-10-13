@@ -9,10 +9,10 @@ import { publicEnv } from '@/lib/env';
 import { isSafeHttpsUrl } from '@/lib/urls';
 import type { SiteSettings } from '@/lib/types';
 
-const anton = localFont({ src: '../public/fonts/anton.ttf', variable: '--font-anton', display: 'swap' });
-const archivo = localFont({
-  src: [{ path: '../public/fonts/archivo-400.ttf', weight: '400' }, { path: '../public/fonts/archivo-700.ttf', weight: '700' }],
-  variable: '--font-archivo', display: 'swap',
+const title = localFont({ src: '../public/fonts/archivo-black.ttf', variable: '--font-title', display: 'swap', weight: '400' });
+const body = localFont({
+  src: [{ path: '../public/fonts/inter-300.ttf', weight: '300' }, { path: '../public/fonts/inter-400.ttf', weight: '400' }, { path: '../public/fonts/inter-600.ttf', weight: '600' }],
+  variable: '--font-body', display: 'swap',
 });
 
 export const dynamic = 'force-dynamic';
@@ -45,18 +45,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     ['Instagram', site?.instagram_url], ['YouTube', site?.youtube_channel_url], ['WhatsApp', site?.whatsapp_url],
   ].filter((x): x is [string, string] => !!x[1] && isSafeHttpsUrl(x[1]));
   return (
-    <html lang="pt-BR" className={`${anton.variable} ${archivo.variable}`}>
+    <html lang="pt-BR" className={`${title.variable} ${body.variable}`}>
       <body>
         <a className="skip" href="#conteudo">Pular para o conteúdo</a>
         <header className="top">
-          <div className="top-in">
-            <Link href="/" className="brand" aria-label={`${site?.site_title || 'Revolution Conference'} — início`}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.jpg" alt="" width={34} height={34} />
-              <span>{site?.site_title || 'Revolution'}</span>
-            </Link>
-            <NavTabs />
-          </div>
+          <Link href="/" className="brand" aria-label={`${site?.site_title || 'Revolution Conference'} — início`}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.jpg" alt="" width={34} height={34} />
+          </Link>
+          <NavTabs />
         </header>
         <main id="conteudo" tabIndex={-1}>{children}</main>
         <footer className="foot">
