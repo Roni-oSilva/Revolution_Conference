@@ -65,7 +65,7 @@ Fluxo da transmissão: **câmera → OBS Studio → YouTube Live → site**. O s
 
 - **Evento e home** (`/admin/evento`): nome, descrição, fuso, data do evento, **abertura** (fim da contagem e troca de fase), encerramento, local, mapa, banner, redes e texto de privacidade.
 - **Mural** (`/admin/mural`): crie rascunhos, **pré-visualize** (`Pré-visualizar`) e publique.
-- A data de abertura inicial da migração é `2026-10-17 00:00 (UTC-3)`. Ajuste no painel.
+- Nenhuma data é presumida: enquanto a **abertura** não for definida em `/admin/evento`, o site fica na fase “pré-evento” e mostra “Data de abertura a confirmar”.
 
 ## 6. Limites dos planos gratuitos (conferir antes do evento)
 

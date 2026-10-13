@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { computePhase, countdownParts, parseIsoMs } from '@/lib/phase';
 import { zonedLocalToUtcMs, utcToZonedLocalInput, isValidTimeZone } from '@/lib/tz';
 
-const T = Date.parse('2026-10-17T00:00:00-03:00');
+const T = Date.parse('2030-06-15T00:00:00-03:00');
 describe('fase do site', () => {
   it('antes da abertura = pre; na abertura = open; após fim = ended', () => {
     expect(computePhase(T - 1, T, null)).toBe('pre');
@@ -25,13 +25,13 @@ describe('fase do site', () => {
   });
 });
 describe('fusos', () => {
-  it('meia-noite em São Paulo = 03:00 UTC', () => expect(new Date(zonedLocalToUtcMs('2026-10-17T00:00', 'America/Sao_Paulo')).toISOString()).toBe('2026-10-17T03:00:00.000Z'));
+  it('meia-noite em São Paulo = 03:00 UTC', () => expect(new Date(zonedLocalToUtcMs('2030-06-15T00:00', 'America/Sao_Paulo')).toISOString()).toBe('2030-06-15T03:00:00.000Z'));
   it('respeita horário de verão histórico', () => expect(new Date(zonedLocalToUtcMs('2018-01-10T12:00', 'America/Sao_Paulo')).toISOString()).toBe('2018-01-10T14:00:00.000Z'));
-  it('outros fusos', () => expect(new Date(zonedLocalToUtcMs('2026-10-17T00:00', 'Europe/Lisbon')).toISOString()).toBe('2026-10-16T23:00:00.000Z'));
-  it('ida e volta', () => expect(utcToZonedLocalInput('2026-10-17T03:00:00.000Z', 'America/Sao_Paulo')).toBe('2026-10-17T00:00'));
+  it('outros fusos', () => expect(new Date(zonedLocalToUtcMs('2030-06-15T00:00', 'Europe/Lisbon')).toISOString()).toBe('2030-06-14T23:00:00.000Z'));
+  it('ida e volta', () => expect(utcToZonedLocalInput('2030-06-15T03:00:00.000Z', 'America/Sao_Paulo')).toBe('2030-06-15T00:00'));
   it('inválidos', () => {
     expect(Number.isNaN(zonedLocalToUtcMs('lixo', 'America/Sao_Paulo'))).toBe(true);
-    expect(Number.isNaN(zonedLocalToUtcMs('2026-10-17T00:00', 'Marte/Olimpo'))).toBe(true);
+    expect(Number.isNaN(zonedLocalToUtcMs('2030-06-15T00:00', 'Marte/Olimpo'))).toBe(true);
     expect(isValidTimeZone('Marte/Olimpo')).toBe(false);
     expect(isValidTimeZone('America/Sao_Paulo')).toBe(true);
     expect(utcToZonedLocalInput(null, 'America/Sao_Paulo')).toBe('');

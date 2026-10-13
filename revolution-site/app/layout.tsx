@@ -27,14 +27,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const site = await loadSite();
   const title = site?.site_title || 'Revolution Conference';
   const description = site?.seo_description || site?.tagline || 'Site oficial da Revolution Conference: informações, transmissão ao vivo e mural.';
-  const og = site?.hero_image_url && isSafeHttpsUrl(site.hero_image_url) ? [site.hero_image_url] : ['/logo.jpg'];
+  const og = site?.hero_image_url && isSafeHttpsUrl(site.hero_image_url) ? [site.hero_image_url] : undefined;
   return {
     metadataBase: new URL(publicEnv().siteUrl),
     title: { default: title, template: `%s · ${title}` },
     description,
     openGraph: { type: 'website', siteName: title, title, description, locale: 'pt_BR', images: og },
     twitter: { card: 'summary_large_image', title, description, images: og },
-    icons: { icon: '/logo.jpg' },
   };
 }
 export const viewport: Viewport = { themeColor: '#0a0a0a', width: 'device-width', initialScale: 1 };
@@ -50,8 +49,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <a className="skip" href="#conteudo">Pular para o conteúdo</a>
         <header className="top">
           <Link href="/" className="brand" aria-label={`${site?.site_title || 'Revolution Conference'} — início`}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.jpg" alt="" width={34} height={34} />
+            <span aria-hidden="true">{site?.site_title || 'Revolution'}</span>
           </Link>
           <NavTabs />
         </header>

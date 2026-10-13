@@ -130,5 +130,5 @@ create index if not exists rate_limits_window_idx on public.rate_limits (window_
 
 -- Linhas únicas de configuração
 insert into public.site_settings (id) values (1) on conflict do nothing;
-insert into public.event_settings (id, starts_at, opens_at)
-values (1, timestamptz '2026-10-17 00:00:00-03', timestamptz '2026-10-17 00:00:00-03') on conflict do nothing;
+-- datas do evento: definidas pelo administrador no painel (nenhuma data é presumida)
+insert into public.event_settings (id) values (1) on conflict do nothing;

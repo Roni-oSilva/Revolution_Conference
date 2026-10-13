@@ -21,7 +21,7 @@ html.lock { overflow: hidden; }
 <div id="intro" role="presentation"><canvas id="introCanvas" aria-hidden="true"></canvas><button type="button" class="intro-skip" id="introSkip">Pular introdução</button></div>
 <a class="skip" href="#conteudo">Pular para o conteúdo</a>
 <header class="top">
-  <a href="#/" class="brand" aria-label="Revolution Conference — início"><img src="__LOGO__" alt="" width="34" height="34"></a>
+  <a href="#/" class="brand" aria-label="Revolution Conference — início"><span aria-hidden="true">Revolution</span></a>
   <nav class="tabs" aria-label="Principal"><a href="#/" data-tab="inicio">Início</a><a href="#/ao-vivo" data-tab="ao-vivo">Ao Vivo</a><a href="#/mural" data-tab="mural">Mural</a></nav>
 </header>
 <main id="conteudo" tabindex="-1">
@@ -40,7 +40,7 @@ html.lock { overflow: hidden; }
   </section>
   <div class="wrap">
     <div class="info">
-      <div class="card"><span class="kicker">Quando</span><h2 style="margin-top:10px">Sábado, 17 de outubro</h2><p class="muted" style="margin:0">Horário de Brasília (America/Sao_Paulo)</p></div>
+      <div class="card"><span class="kicker">Quando</span><h2 style="margin-top:10px" id="qd">Data definida no painel</h2><p class="muted" style="margin:0">Horário de Brasília (America/Sao_Paulo)</p></div>
       <div class="card"><span class="kicker">Onde</span><h2 style="margin-top:10px">Local a confirmar</h2><p class="muted" style="margin:0">Endereço e mapa aparecem aqui quando o admin cadastrar.</p></div>
       <div class="card"><span class="kicker">Sobre</span><p style="margin:10px 0 0">Texto do evento escrito no painel.</p></div>
     </div>
@@ -95,7 +95,8 @@ function route() {
 }
 addEventListener('hashchange', route); route();
 // contagem para 17/10/2026 00:00 (Brasília)
-var target = Date.parse('2026-10-17T00:00:00-03:00'), pad = function (n) { return String(n).padStart(2, '0'); };
+var target = Date.now() + 3 * 86400e3 + 7 * 3600e3 + 32 * 60e3 + 20e3; /* exemplo: o site real usa a data do painel */ document.getElementById('qd').textContent = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).format(new Date(target + 3 * 86400e3));
+var _t0 = target, pad = function (n) { return String(n).padStart(2, '0'); };
 function tick() { var s = Math.max(0, Math.floor((target - Date.now()) / 1000)); cd.textContent = pad(Math.floor(s / 86400)); ch.textContent = pad(Math.floor(s / 3600) % 24); cm.textContent = pad(Math.floor(s / 60) % 60); cs.textContent = pad(s % 60); }
 setInterval(tick, 500); tick();
 // pastas

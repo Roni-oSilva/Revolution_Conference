@@ -20,11 +20,11 @@ describe('formulários do admin', () => {
     expect(ok.success && ok.data.hero_image_url).toBeNull();
   });
   it('evento: fuso e datas', () => {
-    const ok = { name: 'Rev', description: '', timezone: 'America/Sao_Paulo', opens_local: '2026-10-17T00:00', ends_local: '2026-10-19T00:00' };
+    const ok = { name: 'Rev', description: '', timezone: 'America/Sao_Paulo', opens_local: '2030-06-15T00:00', ends_local: '2030-06-17T00:00' };
     expect(eventSchema.safeParse(ok).success).toBe(true);
     expect(eventSchema.safeParse({ ...ok, timezone: 'Marte/X' }).success).toBe(false);
     expect(eventSchema.safeParse({ ...ok, opens_local: 'amanhã' }).success).toBe(false);
-    expect(eventSchema.safeParse({ ...ok, ends_local: '2026-10-16T00:00' }).success).toBe(false); // fim antes da abertura
+    expect(eventSchema.safeParse({ ...ok, ends_local: '2030-06-14T00:00' }).success).toBe(false); // fim antes da abertura
     expect(eventSchema.safeParse({ ...ok, maps_url: 'javascript:alert(1)' }).success).toBe(false);
   });
   it('vídeo, mídia, transmissão e segurança', () => {

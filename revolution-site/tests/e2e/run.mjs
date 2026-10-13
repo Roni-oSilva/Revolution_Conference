@@ -280,11 +280,11 @@ await test('sem data de abertura nunca antecipa a fase nova', async () => {
 });
 
 await test('informações do evento e fuso configurável', async () => {
-  await db.exec(`update public.event_settings set name='Revolution 2026', description='Uma conferência', timezone='America/Sao_Paulo', starts_at='2026-10-17T22:30:00Z', opens_at = now() + interval '1 day', location_name='Igreja Central', address='Rua A, 100', maps_url='https://maps.app.goo.gl/abc'`);
+  await db.exec(`update public.event_settings set name='Revolution Teste', description='Uma conferência', timezone='America/Sao_Paulo', starts_at='2030-06-15T22:30:00Z', opens_at = now() + interval '1 day', location_name='Igreja Central', address='Rua A, 100', maps_url='https://maps.app.goo.gl/abc'`);
   const page = await newPage();
   await page.goto(base);
   const text = await page.locator('.info').first().innerText();
-  ok(/sábado, 17 de outubro de 2026/i.test(text) && text.includes('19:30'), text);
+  ok(/sábado, 15 de junho de 2030/i.test(text) && text.includes('19:30'), text);
   ok(text.includes('Igreja Central') && text.includes('Rua A, 100'));
   eq(await page.getByRole('link', { name: /Ver no mapa/ }).getAttribute('href'), 'https://maps.app.goo.gl/abc');
   await db.exec(`update public.event_settings set timezone='Europe/Lisbon'`);
@@ -926,8 +926,8 @@ await test('configurações do evento e da home pelo painel (fuso, datas, links 
   const page = await newPage(); await loginOk(page, USERS.editor);
   await page.goto(`${base}/admin/evento`);
   const ev = page.locator('form').filter({ hasText: 'Salvar evento' });
-  await ev.getByLabel('Nome do evento').fill('Revolution 2026');
-  await ev.getByLabel(/Abertura/).fill('2026-10-17T00:00');
+  await ev.getByLabel('Nome do evento').fill('Revolution Teste');
+  await ev.getByLabel(/Abertura/).fill('2030-06-15T00:00');
   await ev.getByLabel('Local', { exact: true }).fill('Igreja Central');
   await ev.getByLabel('Link do mapa (https)').fill('javascript:alert(1)');
   await ev.getByLabel('Link do mapa (https)').evaluate((el) => { el.type = 'text'; });
@@ -935,10 +935,10 @@ await test('configurações do evento e da home pelo painel (fuso, datas, links 
   eq((await db.query(`select name from public.event_settings`)).rows[0].name, 'Revolution Conference', 'nada salvo com link malicioso');
   await page.goto(`${base}/admin/evento`);
   const ev2 = page.locator('form').filter({ hasText: 'Salvar evento' });
-  await ev2.getByLabel('Nome do evento').fill('Revolution 2026'); await ev2.getByLabel(/Abertura/).fill('2026-10-17T00:00'); await ev2.getByLabel('Local', { exact: true }).fill('Igreja Central');
+  await ev2.getByLabel('Nome do evento').fill('Revolution Teste'); await ev2.getByLabel(/Abertura/).fill('2030-06-15T00:00'); await ev2.getByLabel('Local', { exact: true }).fill('Igreja Central');
   await ev2.getByRole('button', { name: 'Salvar evento' }).click(); await page.getByText('Salvo com sucesso.').waitFor();
   const r = (await db.query(`select name, location_name, opens_at from public.event_settings`)).rows[0];
-  eq(r.name, 'Revolution 2026'); eq(r.location_name, 'Igreja Central'); eq(new Date(r.opens_at).toISOString(), '2026-10-17T03:00:00.000Z', 'meia-noite de Brasília = 03:00Z');
+  eq(r.name, 'Revolution Teste'); eq(r.location_name, 'Igreja Central'); eq(new Date(r.opens_at).toISOString(), '2030-06-15T03:00:00.000Z', 'meia-noite de Brasília = 03:00Z');
   await page.goto(`${base}/admin/evento`);
   const site = page.locator('form').filter({ hasText: 'Salvar home e site' });
   await site.getByLabel('Frase de destaque (banner)').fill('Algo novo começa'); await site.getByLabel('Instagram (link)').fill('https://instagram.com/revolution');
