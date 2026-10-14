@@ -5,14 +5,14 @@ import base64, sys, re
 b64 = lambda p: base64.b64encode(open(p, 'rb').read()).decode()
 F = 'public/fonts/'
 fonts = f"""
-@font-face{{font-family:'Anton';src:url(data:font/woff2;base64,{b64(F+'anton-400.woff2')}) format('woff2');font-weight:400;font-display:swap}}
-@font-face{{font-family:'Poppins';src:url(data:font/woff2;base64,{b64(F+'poppins-300.woff2')}) format('woff2');font-weight:300;font-display:swap}}
-@font-face{{font-family:'Poppins';src:url(data:font/woff2;base64,{b64(F+'poppins-400.woff2')}) format('woff2');font-weight:400;font-display:swap}}
-@font-face{{font-family:'Poppins';src:url(data:font/woff2;base64,{b64(F+'poppins-600.woff2')}) format('woff2');font-weight:600;font-display:swap}}
+@font-face{{font-family:'Orbitron';src:url(data:font/woff2;base64,{b64(F+'orbitron-700.woff2')}) format('woff2');font-weight:400 700;font-display:swap}}
+@font-face{{font-family:'Open Sans';src:url(data:font/woff2;base64,{b64(F+'open-sans-300.woff2')}) format('woff2');font-weight:300;font-display:swap}}
+@font-face{{font-family:'Open Sans';src:url(data:font/woff2;base64,{b64(F+'open-sans-400.woff2')}) format('woff2');font-weight:400;font-display:swap}}
+@font-face{{font-family:'Open Sans';src:url(data:font/woff2;base64,{b64(F+'open-sans-600.woff2')}) format('woff2');font-weight:600;font-display:swap}}
 """
 css = open('app/globals.css').read()
 # variáveis de fonte do Next → fontes embutidas
-css = css.replace("var(--font-title), Anton", "Anton").replace("var(--font-body), Poppins", "Poppins")
+css = css.replace("var(--font-title), Orbitron", "Orbitron").replace("var(--font-body), 'Open Sans'", "'Open Sans'")
 html = open('scripts/preview-template.html').read()
 html = html.replace('/*LOGO_XL*/', 'data:image/png;base64,' + b64('public/logo.png')).replace('/*LOGO_SM*/', 'data:image/png;base64,' + b64('public/logo-sm.png'))
 html = html.replace('/*FONTS*/', fonts).replace('/*APPCSS*/', css)

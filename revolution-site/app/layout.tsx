@@ -10,9 +10,9 @@ import { publicEnv } from '@/lib/env';
 import { isSafeHttpsUrl } from '@/lib/urls';
 import type { SiteSettings } from '@/lib/types';
 
-const title = localFont({ src: '../public/fonts/anton-400.woff2', variable: '--font-title', display: 'swap', weight: '400' });
+const title = localFont({ src: [{ path: '../public/fonts/orbitron-700.woff2', weight: '400' }, { path: '../public/fonts/orbitron-700.woff2', weight: '700' }], variable: '--font-title', display: 'swap' });
 const body = localFont({
-  src: [{ path: '../public/fonts/poppins-300.woff2', weight: '300' }, { path: '../public/fonts/poppins-400.woff2', weight: '400' }, { path: '../public/fonts/poppins-600.woff2', weight: '600' }],
+  src: [{ path: '../public/fonts/open-sans-300.woff2', weight: '300' }, { path: '../public/fonts/open-sans-400.woff2', weight: '400' }, { path: '../public/fonts/open-sans-600.woff2', weight: '600' }],
   variable: '--font-body', display: 'swap',
 });
 

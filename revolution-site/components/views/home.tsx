@@ -55,7 +55,6 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
   const liveHref = preview ? '/admin/preview/ao-vivo' : '/ao-vivo';
   const wallHref = preview ? '/admin/preview/mural' : '/mural';
 
-  const nameLoop = site.site_title || event.name;
   const hero = (variant: Phase) => {
     const when = event.starts_at ? formatShort(event.starts_at, event.timezone) : '';
     const place = event.location_name || '';
@@ -86,7 +85,6 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
             {variant === 'open' && live && <span className="badge live">● Ao vivo</span>}
           </aside>
         </div>
-        <div className="marquee" aria-hidden="true"><div className="track">{Array.from({ length: 6 }, (_, i) => <span key={i}>{nameLoop} <i>•</i> {site.tagline || event.name} <i>•</i> </span>)}</div></div>
       </section>
     );
   };

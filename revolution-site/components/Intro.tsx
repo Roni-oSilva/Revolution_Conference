@@ -44,7 +44,8 @@ export function Intro() {
     const safety = window.setTimeout(finish, 12000);
 
     (async () => {
-      try { await Promise.race([document.fonts.load('100px Anton'), new Promise((r) => setTimeout(r, 1500))]); } catch { /* fonte de reserva */ }
+      const fam = getComputedStyle(document.documentElement).getPropertyValue('--font-title').trim() || 'Orbitron';
+      try { await Promise.race([document.fonts.load(`100px ${fam}`), new Promise((r) => setTimeout(r, 1500))]); } catch { /* fonte de reserva */ }
       if (stopped) return;
       const small = window.innerWidth < 700;
       const dpr = Math.min(window.devicePixelRatio || 1, small ? 1.5 : 2);
@@ -53,7 +54,7 @@ export function Intro() {
       canvas.style.width = '100%'; canvas.style.height = '100%';
 
       // texto ajustado à largura
-      const family = 'Anton, Impact, "Arial Narrow", sans-serif';
+      const family = `${fam}, Orbitron, "Arial Black", sans-serif`;
       let fs = 100 * dpr;
       ctx.font = `${fs}px ${family}`;
       const widest = Math.max(...LINES.map((l) => ctx.measureText(l).width));
@@ -99,7 +100,7 @@ export function Intro() {
         // brilho ambiente discreto atrás do nome
         const halo = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * 0.55);
         const ha = 0.10 * appear * (1 - wave * 0.8);
-        halo.addColorStop(0, `rgba(239,74,43,${ha})`); halo.addColorStop(1, 'rgba(0,0,0,0)');
+        halo.addColorStop(0, `rgba(223,37,49,${ha})`); halo.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = halo; ctx.fillRect(0, 0, W, H);
 
         // texto ainda intacto (à direita da frente da onda)
@@ -137,7 +138,7 @@ export function Intro() {
           p.x += p.vx * dt; p.y += p.vy * dt;
           const k = p.age / p.life;
           ctx.globalAlpha = Math.pow(1 - k, 1.4) * 0.95 * (1 - skipK);
-          ctx.fillStyle = p.tone > 0.9 ? '#ff5a3d' : p.tone > 0.45 ? '#ffffff' : '#c9c9c9';
+          ctx.fillStyle = p.tone > 0.9 ? '#df2531' : p.tone > 0.45 ? '#ffffff' : '#c9c9c9';
           const s = p.s * (1 - k * 0.55);
           ctx.fillRect(p.x, p.y, s, s);
         }

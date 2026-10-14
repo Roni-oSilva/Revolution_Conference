@@ -7,10 +7,9 @@
 /*FONTS*/
 /*APPCSS*/
 html.lock { overflow: hidden; }
-.tag-preview { position: fixed; left: 50%; bottom: 12px; translate: -50% 0; z-index: 70; font: 600 11px/1 Poppins, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: #fff; padding: 9px 14px; border-radius: 99px; background: rgba(0,0,0,.65); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: 0 0 0 1px rgba(255,255,255,.18); pointer-events: none; text-align: center; max-width: 94vw; }
-.ph-tile { border: 0; border-radius: 16px; aspect-ratio: 4/3; display: grid; place-items: center; color: rgba(255,255,255,.75); font: 600 11px Poppins, sans-serif; letter-spacing: .12em; text-transform: uppercase; }
-.ph-tile:nth-child(3n+1) { background: radial-gradient(at 20% 15%, rgba(239,74,43,.8), transparent 60%), linear-gradient(135deg, #0b0d10, #1b2a31); }
-.ph-tile:nth-child(3n+2) { background: radial-gradient(at 80% 20%, rgba(251,231,210,.55), transparent 55%), linear-gradient(135deg, #3e2850, #120c18); }
+.ph-tile { border: 0; border-radius: 16px; aspect-ratio: 4/3; display: grid; place-items: center; color: rgba(255,255,255,.75); font: 600 11px 'Open Sans', sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+.ph-tile:nth-child(3n+1) { background: radial-gradient(at 20% 15%, rgba(223,37,49,.8), transparent 60%), linear-gradient(135deg, #0b0d10, #1b2a31); }
+.ph-tile:nth-child(3n+2) { background: radial-gradient(at 80% 20%, rgba(255,255,255,.55), transparent 55%), linear-gradient(135deg, #3a0a10, #120c18); }
 .ph-tile:nth-child(3n) { background: radial-gradient(at 70% 80%, rgba(179,80,47,.8), transparent 60%), linear-gradient(135deg, #16252c, #07090c); }
 .ph-tile.big { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
 [data-view] { display: none; } [data-view].on { display: block; }
@@ -39,7 +38,6 @@ html.lock { overflow: hidden; }
       </div>
       <aside class="hero-card" aria-label="Status do evento"><span class="kicker">Próximo encontro</span><p class="hc-big" id="hcw">Data definida no painel</p><p class="hc-sub">Local definido no painel</p><p class="hc-sub muted">Endereço aparece aqui</p></aside>
     </div>
-    <div class="marquee" aria-hidden="true"><div class="track" id="mq"></div></div>
   </section>
   <div class="wrap">
     <section class="livebox glass" aria-labelledby="lb-title"><div class="lb-head"><h2 id="lb-title" class="section-title" style="margin:0">Vídeo ao vivo</h2><span class="badge">Aguardando</span></div>
@@ -98,7 +96,7 @@ html.lock { overflow: hidden; }
 
 </main>
 <footer class="foot"><div class="foot-logo"><img class="logo logo-xl" src="/*LOGO_XL*/" alt="Revolução Jovem Teen"></div><div class="foot-in"><span>© Revolution Conference</span><span>Política de privacidade</span></div></footer>
-<div class="tag-preview">Prévia · conteúdo de exemplo · o site real usa os dados do painel</div>
+
 <script>
 // abas
 var views = { '': 'inicio', '/': 'inicio', '/ao-vivo': 'ao-vivo', '/mural': 'mural' };
@@ -110,8 +108,7 @@ function route() {
   scrollTo(0, 0);
 }
 addEventListener('hashchange', route); route();
-document.getElementById('hcw').textContent = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(Date.now() + 3 * 86400e3 + 19.5 * 3600e3 * 0)) + ' (exemplo)';
-var mq = document.getElementById('mq'); for (var q = 0; q < 6; q++) { var sp = document.createElement('span'); sp.innerHTML = 'Revolution Conference <i>•</i> Apaixonados pela Presença <i>•</i> '; mq.appendChild(sp); }
+document.getElementById('hcw').textContent = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(Date.now() + 3 * 86400e3 + 19.5 * 3600e3 * 0));
 // pastas
 document.querySelectorAll('.fr').forEach(function (b) { b.onclick = function () { var o = b.parentNode.classList.toggle('open'); b.setAttribute('aria-expanded', o); b.parentNode.querySelectorAll('.fl a').forEach(function (a) { a.tabIndex = o ? 0 : -1; }); }; });
 // galeria: filtros (visual)

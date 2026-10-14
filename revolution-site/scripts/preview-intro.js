@@ -14,10 +14,10 @@
   addEventListener('keydown', function (e) { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') skip(); });
   setTimeout(finish, 12000);
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { intro.remove(); document.documentElement.classList.remove('lock'); return; }
-  Promise.race([document.fonts.load('100px Anton'), new Promise(function (r) { setTimeout(r, 1500); })]).then(function () {
+  Promise.race([document.fonts.load('100px Orbitron'), new Promise(function (r) { setTimeout(r, 1500); })]).then(function () {
     var small = innerWidth < 700, dpr = Math.min(devicePixelRatio || 1, small ? 1.5 : 2);
     var W = canvas.width = Math.round(innerWidth * dpr), H = canvas.height = Math.round(innerHeight * dpr);
-    var family = 'Anton, Impact, "Arial Narrow", sans-serif', fs = 100 * dpr;
+    var family = 'Orbitron, "Arial Black", sans-serif', fs = 100 * dpr;
     ctx.font = fs + 'px ' + family;
     var widest = Math.max.apply(null, LINES.map(function (l) { return ctx.measureText(l).width; }));
     fs = Math.min(fs * ((W * 0.84) / widest), (small ? 110 : 170) * dpr);
@@ -37,7 +37,7 @@
       var appear = easeOut(t / T_IN), wave = easeInOut((t - T_HOLD) / T_WAVE), wx = x0 - step + (x1 - x0 + 2 * step) * wave;
       ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
       var halo = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * 0.55), ha = 0.10 * appear * (1 - wave * 0.8);
-      halo.addColorStop(0, 'rgba(239,74,43,' + ha + ')'); halo.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = halo; ctx.fillRect(0, 0, W, H);
+      halo.addColorStop(0, 'rgba(223,37,49,' + ha + ')'); halo.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = halo; ctx.fillRect(0, 0, W, H);
       if (wave < 1) {
         ctx.save(); ctx.beginPath(); ctx.rect(Math.max(0, wx), 0, W, H); ctx.clip(); ctx.font = font; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         var scale = 1.035 - 0.035 * appear;
@@ -58,7 +58,7 @@
         p.vx += f * 90 * dpr * dt; p.vy += (flow(p.y * 0.004 / dpr, p.x * 0.004 / dpr, t + 3) * 90 - 18) * dpr * dt;
         var drag = Math.pow(0.5, dt * 1.6); p.vx *= drag; p.vy *= drag; p.x += p.vx * dt; p.y += p.vy * dt;
         var k = p.age / p.life; ctx.globalAlpha = Math.pow(1 - k, 1.4) * 0.95 * (1 - skipK);
-        ctx.fillStyle = p.tone > 0.9 ? '#ff5a3d' : p.tone > 0.45 ? '#ffffff' : '#c9c9c9';
+        ctx.fillStyle = p.tone > 0.9 ? '#df2531' : p.tone > 0.45 ? '#ffffff' : '#c9c9c9';
         var s = p.s * (1 - k * 0.55); ctx.fillRect(p.x, p.y, s, s);
       }
       ctx.globalAlpha = 1;
