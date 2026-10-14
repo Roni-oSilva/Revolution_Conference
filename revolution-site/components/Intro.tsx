@@ -44,7 +44,7 @@ export function Intro() {
     const safety = window.setTimeout(finish, 12000);
 
     (async () => {
-      const fam = getComputedStyle(document.documentElement).getPropertyValue('--font-title').trim() || 'Orbitron';
+      const fam = getComputedStyle(document.documentElement).getPropertyValue('--font-title').trim() || 'Archivo Black';
       try { await Promise.race([document.fonts.load(`100px ${fam}`), new Promise((r) => setTimeout(r, 1500))]); } catch { /* fonte de reserva */ }
       if (stopped) return;
       const small = window.innerWidth < 700;
@@ -54,7 +54,7 @@ export function Intro() {
       canvas.style.width = '100%'; canvas.style.height = '100%';
 
       // texto ajustado à largura
-      const family = `${fam}, Orbitron, "Arial Black", sans-serif`;
+      const family = `${fam}, "Archivo Black", Impact, "Arial Black", sans-serif`;
       let fs = 100 * dpr;
       ctx.font = `${fs}px ${family}`;
       const widest = Math.max(...LINES.map((l) => ctx.measureText(l).width));

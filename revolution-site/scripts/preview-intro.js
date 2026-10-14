@@ -14,10 +14,10 @@
   addEventListener('keydown', function (e) { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') skip(); });
   setTimeout(finish, 12000);
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { intro.remove(); document.documentElement.classList.remove('lock'); return; }
-  Promise.race([document.fonts.load('100px Orbitron'), new Promise(function (r) { setTimeout(r, 1500); })]).then(function () {
+  Promise.race([document.fonts.load('100px "Archivo Black"'), new Promise(function (r) { setTimeout(r, 1500); })]).then(function () {
     var small = innerWidth < 700, dpr = Math.min(devicePixelRatio || 1, small ? 1.5 : 2);
     var W = canvas.width = Math.round(innerWidth * dpr), H = canvas.height = Math.round(innerHeight * dpr);
-    var family = 'Orbitron, "Arial Black", sans-serif', fs = 100 * dpr;
+    var family = '"Archivo Black", Impact, "Arial Black", sans-serif', fs = 100 * dpr;
     ctx.font = fs + 'px ' + family;
     var widest = Math.max.apply(null, LINES.map(function (l) { return ctx.measureText(l).width; }));
     fs = Math.min(fs * ((W * 0.84) / widest), (small ? 110 : 170) * dpr);
