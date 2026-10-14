@@ -5,14 +5,14 @@ import base64, sys, re
 b64 = lambda p: base64.b64encode(open(p, 'rb').read()).decode()
 F = 'public/fonts/'
 fonts = f"""
-@font-face{{font-family:'Archivo Black';src:url(data:font/woff2;base64,{b64(F+'archivo-black-400.woff2')}) format('woff2');font-weight:400;font-display:swap}}
-@font-face{{font-family:'Archivo';src:url(data:font/woff2;base64,{b64(F+'archivo-300.woff2')}) format('woff2');font-weight:300;font-display:swap}}
-@font-face{{font-family:'Archivo';src:url(data:font/woff2;base64,{b64(F+'archivo-400.woff2')}) format('woff2');font-weight:400;font-display:swap}}
-@font-face{{font-family:'Archivo';src:url(data:font/woff2;base64,{b64(F+'archivo-600.woff2')}) format('woff2');font-weight:600;font-display:swap}}
+@font-face{{font-family:'Plus Jakarta Sans';src:url(data:font/woff2;base64,{b64(F+'jakarta-300.woff2')}) format('woff2');font-weight:300;font-display:swap}}
+@font-face{{font-family:'Plus Jakarta Sans';src:url(data:font/woff2;base64,{b64(F+'jakarta-400.woff2')}) format('woff2');font-weight:400;font-display:swap}}
+@font-face{{font-family:'Plus Jakarta Sans';src:url(data:font/woff2;base64,{b64(F+'jakarta-600.woff2')}) format('woff2');font-weight:600;font-display:swap}}
+@font-face{{font-family:'JakartaTitle';src:url(data:font/woff2;base64,{b64(F+'jakarta-800.woff2')}) format('woff2');font-weight:400;font-display:swap}}
 """
 css = open('app/globals.css').read()
 # variáveis de fonte do Next → fontes embutidas
-css = css.replace("var(--font-title), 'Archivo Black'", "'Archivo Black'").replace("var(--font-body), Archivo", "Archivo")
+css = css.replace("var(--font-title), 'Plus Jakarta Sans'", "'JakartaTitle'").replace("var(--font-body), 'Plus Jakarta Sans'", "'Plus Jakarta Sans'")
 html = open('scripts/preview-template.html').read()
 html = html.replace('/*LOGO_XL*/', 'data:image/png;base64,' + b64('public/logo.png')).replace('/*LOGO_SM*/', 'data:image/png;base64,' + b64('public/logo-sm.png'))
 html = html.replace('/*FONTS*/', fonts).replace('/*APPCSS*/', css)

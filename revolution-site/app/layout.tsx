@@ -10,9 +10,9 @@ import { publicEnv } from '@/lib/env';
 import { isSafeHttpsUrl } from '@/lib/urls';
 import type { SiteSettings } from '@/lib/types';
 
-const title = localFont({ src: '../public/fonts/archivo-black-400.woff2', variable: '--font-title', display: 'swap', weight: '400' });
+const title = localFont({ src: '../public/fonts/jakarta-800.woff2', variable: '--font-title', display: 'swap', weight: '400' });
 const body = localFont({
-  src: [{ path: '../public/fonts/archivo-300.woff2', weight: '300' }, { path: '../public/fonts/archivo-400.woff2', weight: '400' }, { path: '../public/fonts/archivo-600.woff2', weight: '600' }],
+  src: [{ path: '../public/fonts/jakarta-300.woff2', weight: '300' }, { path: '../public/fonts/jakarta-400.woff2', weight: '400' }, { path: '../public/fonts/jakarta-600.woff2', weight: '600' }],
   variable: '--font-body', display: 'swap',
 });
 

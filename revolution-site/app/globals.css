@@ -2,8 +2,8 @@
   --bg: #0a0a0a; --fg: #ffffff; --muted: rgba(255,255,255,.68); --line: rgba(255,255,255,.16);
   --card: #141414; --red: #df2531; --red-hi: #f04652; --focus: #ffffff;
   --pad: clamp(16px, 4vw, 48px); --max: 1180px;
-  --f-title: var(--font-title), 'Archivo Black', Impact, 'Arial Black', sans-serif;
-  --f-body: var(--font-body), Archivo, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-title: var(--font-title), 'Plus Jakarta Sans', 'Segoe UI', sans-serif, sans-serif;
+  --f-body: var(--font-body), 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   /* cores das pastas (usadas como detalhes translúcidos) */
   /* paleta oficial: vermelho #df2531 (100%, 65%, 45%), branco e preto */
   --ember: 223 37 49; --terra: 223 37 49; --teal: 223 37 49; --peach: 255 255 255; --plum: 223 37 49;
@@ -20,7 +20,7 @@ img, video, iframe { max-width: 100%; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; } }
 
-h1, h2, h3 { font-family: var(--f-title); font-weight: 400; text-transform: uppercase; line-height: 1; letter-spacing: -.01em; margin: 0 0 .4em; }
+h1, h2, h3 { font-family: var(--f-title); font-weight: 400; text-transform: none; letter-spacing: -.02em; line-height: 1; letter-spacing: -.01em; margin: 0 0 .4em; }
 .kicker { font: 600 11px/1 var(--f-body); letter-spacing: .24em; text-transform: uppercase; color: var(--red-hi); }
 .red { color: var(--red); }
 .muted { color: var(--muted); }
@@ -275,4 +275,4 @@ html:has(#intro) { overflow: hidden; }
 .hero.big h1 { font-size: clamp(28px, 5.6vw, 80px); line-height: 1.05; }
 
 .hc-big, .slot-time, .fr b, .stat b, .lb-empty strong, .where-card h3 { letter-spacing: .02em; }
-.hc-big { font-size: clamp(20px, 2.4vw, 30px); } .where-card h3 { font-size: clamp(22px, 3vw, 36px); }
+.hc-big { font-size: clamp(20px, 2.4vw, 30px); } .where-card h3 { font-size: clamp(22px, 3vw, 36px); text-transform: none; }
