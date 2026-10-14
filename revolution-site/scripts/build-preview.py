@@ -15,6 +15,10 @@ css = open('app/globals.css').read()
 css = css.replace("var(--font-title), 'Plus Jakarta Sans'", "'JakartaTitle'").replace("var(--font-body), 'Plus Jakarta Sans'", "'Plus Jakarta Sans'")
 html = open('scripts/preview-template.html').read()
 html = html.replace('/*LOGO_XL*/', 'data:image/png;base64,' + b64('public/logo.png')).replace('/*LOGO_SM*/', 'data:image/png;base64,' + b64('public/logo-sm.png'))
+import subprocess
+motion = subprocess.run(['node_modules/.bin/esbuild', 'lib/motion.ts', '--bundle', '--format=iife', '--global-name=RVMotion', '--minify'], capture_output=True, text=True, check=True).stdout
+motion += ';RVMotion.initMotion();'
+html = html.replace('/*MOTIONJS*/', motion.replace('</script', '<\\/script'))
 html = html.replace('/*FONTS*/', fonts).replace('/*APPCSS*/', css)
 html = html.replace('/*INTROJS*/', open('scripts/preview-intro.js').read())
 open(sys.argv[1], 'w', encoding='utf8').write(html)

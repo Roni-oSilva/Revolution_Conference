@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import Link from 'next/link';
 import './globals.css';
+import { Motion } from '@/components/Motion';
 import { Logo } from '@/components/Logo';
 import { NavTabs } from '@/components/NavTabs';
 import { createPublicClient } from '@/lib/supabase/public';
@@ -47,6 +48,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="pt-BR" className={`${title.variable} ${body.variable}`}>
       <body>
+        <Motion />
         <a className="skip" href="#conteudo">Pular para o conteúdo</a>
         <header className="top">
           <Link href="/" className="brand" aria-label={`${site?.site_title || 'Revolution Conference'} — início`}>
