@@ -6,9 +6,10 @@ Siga na ordem. Nada aqui exige serviços pagos, mas **confira os limites atuais 
 
 1. Crie um projeto em <https://supabase.com> (região mais próxima do público; guarde a senha do banco).
 2. **SQL Editor** → rode, **nesta ordem**, o conteúdo de cada arquivo de `supabase/migrations/`:
-   `0001_schema.sql` → `0002_functions_triggers.sql` → `0003_rls.sql` → `0004_realtime.sql`.
+   `0001_schema.sql` → `0002_functions_triggers.sql` → `0003_rls.sql` → `0004_realtime.sql` → `0005_media_album.sql` → `0006_schedule.sql`.
    (Ou, com a CLI: `supabase link --project-ref SEU_REF && supabase db push`.)
-3. **Authentication → Providers**: mantenha *Email* habilitado. Em **Sign In / Providers → Email**, **desative “Allow new users to sign up”** (cadastro público desligado: só você cria os usuários do painel em *Authentication → Users → Add user*).
+3. **Dados reais do evento** (rode uma vez, depois das migrações, também no SQL Editor): `supabase/seed_evento.sql` (local, mapa, datas, Instagram, YouTube) e `supabase/seed_programacao.sql` (programação dos dois dias).
+   *Não é preciso configurar Authentication: o painel usa só a senha `ADMIN_PASSWORD`.*
 4. **Project Settings → API**: copie *Project URL*, a chave **anon public** e a **service_role** (esta última é secreta).
 5. **Database → Replication** (ou *Realtime*): confirme que `post_reaction_counts` e `wall_posts` estão na publicação `supabase_realtime` (a migração 0004 faz isso). Sem isso as contagens ainda atualizam por consulta periódica (a cada 20 s), mas não instantaneamente.
 
@@ -25,9 +26,10 @@ Copie `.env.example` para `.env.local` (dev) e cadastre as mesmas na Vercel (*Pr
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | navegador + servidor | URL do projeto |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | navegador + servidor | chave pública; a proteção é o RLS |
-| `SUPABASE_SERVICE_ROLE_KEY` | **somente servidor** | usada em `/api/reactions` e no convite de admins. **Nunca** com prefixo `NEXT_PUBLIC_`. |
+| `SUPABASE_SERVICE_ROLE_KEY` | **somente servidor** | usada em `/api/reactions` e em TODAS as gravações do painel `/admin`. **Nunca** com prefixo `NEXT_PUBLIC_`. |
 | `RATE_LIMIT_SALT` | **somente servidor** | texto aleatório longo (`openssl rand -hex 32`) para o hash do IP |
 | `NEXT_PUBLIC_SITE_URL` | navegador + servidor | URL pública (sitemap, Open Graph, origem permitida nas reações) |
+| `ADMIN_PASSWORD` | **somente servidor** | senha única do painel `/admin` (sem ela o painel fica desligado) |
 
 > Depois de alterar variáveis na Vercel, faça um novo deploy (as `NEXT_PUBLIC_*` são embutidas no build).
 
