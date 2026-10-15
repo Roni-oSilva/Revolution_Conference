@@ -339,3 +339,4 @@ main > * { animation: fade .7s var(--e) both; }
 }
 @media (max-width: 899px) { .brand { display: none; } }
 @media (max-width: 640px) { .player.lb-empty { aspect-ratio: auto; min-height: 240px; } }
+.tabs { background: rgba(14,10,11,.78); -webkit-backdrop-filter: blur(22px) saturate(1.5); backdrop-filter: blur(22px) saturate(1.5); }
