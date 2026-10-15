@@ -337,3 +337,5 @@ main > * { animation: fade .7s var(--e) both; }
   .progress { display: none; } .orb, .hero-bg { translate: none !important; }
   .hero.big h1 { background: none; color: #fff; }
 }
+@media (max-width: 899px) { .brand { display: none; } }
+@media (max-width: 640px) { .player.lb-empty { aspect-ratio: auto; min-height: 240px; } }
