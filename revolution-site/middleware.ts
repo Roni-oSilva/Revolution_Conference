@@ -26,10 +26,29 @@ function buildCsp(nonce: string): string {
   ].join('; ');
 }
 
+/** Nonce aleatório em base64 (Web Crypto, disponível no runtime Edge). */
+function makeNonce(): string {
+  const b = new Uint8Array(16);
+  crypto.getRandomValues(b);
+  let s = '';
+  for (const x of b) s += String.fromCharCode(x);
+  return btoa(s);
+}
+
 export async function middleware(request: NextRequest) {
+  try {
+    return await run(request);
+  } catch (e) {
+    // Qualquer falha inesperada aqui NÃO pode derrubar o site: segue sem CSP/nonce (o login do /admin continua exigido no servidor).
+    console.error('middleware_failed', e instanceof Error ? e.message : String(e));
+    return NextResponse.next();
+  }
+}
+
+async function run(request: NextRequest) {
   // pré-carregamentos de links (prefetch) não precisam de CSP/nonce nem de checagens
   if (request.headers.has('next-router-prefetch') || request.headers.get('purpose') === 'prefetch') return NextResponse.next();
-  const nonce = btoa(crypto.randomUUID());
+  const nonce = makeNonce();
   const csp = buildCsp(nonce);
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-nonce', nonce);
