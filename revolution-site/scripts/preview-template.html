@@ -36,7 +36,7 @@ html.lock { overflow: hidden; }
         <p class="lead">Apaixonados pela Presença</p>
         <div class="btn-row"><a class="btn" href="#/ao-vivo">Ao vivo</a><a class="btn solid" href="#/mural">Ver o mural</a></div>
       </div>
-      <aside class="hero-card" aria-label="Status do evento"><span class="kicker">Próximo encontro</span><p class="hc-big" id="hcw">Data definida no painel</p><p class="hc-sub">Local definido no painel</p><p class="hc-sub muted">Endereço aparece aqui</p></aside>
+      <aside class="hero-card" aria-label="Status do evento"><span class="kicker">Começa em</span><div id="vc-mount"></div><p class="hc-big" id="hcw">17 de out., 18:00</p><p class="hc-sub">Evangelho Pleno Ulianópolis</p><p class="hc-sub muted">R. Dom Teresa Cristina, 135 · Centro, Ulianópolis — PA</p></aside>
     </div>
   </div></section>
   <div class="wrap">
@@ -99,7 +99,6 @@ function route() {
   scrollTo(0, 0);
 }
 addEventListener('hashchange', route); route();
-document.getElementById('hcw').textContent = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(Date.now() + 3 * 86400e3 + 19.5 * 3600e3 * 0));
 // pastas
 document.querySelectorAll('.fr').forEach(function (b) { b.onclick = function () { var o = b.parentNode.classList.toggle('open'); b.setAttribute('aria-expanded', o); b.parentNode.querySelectorAll('.fl a').forEach(function (a) { a.tabIndex = o ? 0 : -1; }); }; });
 // galeria: filtros (visual)
@@ -134,4 +133,5 @@ posts.forEach(function (p, pi) {
 <script>/*HEROJS*/
 (function(){var bin=atob("/*VIDEOB64*/"),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);var url=URL.createObjectURL(new Blob([u],{type:"video/mp4"}));
 var sec=document.querySelector(".hero.hv"),a=sec.querySelector(".hv-scrub"),b=sec.querySelector(".hv-side");a.src=url;b.src=url;RVHero.initHeroScrub(sec,a,b);})();</script>
+<script>/*VCJS*/</script>
 </body></html>

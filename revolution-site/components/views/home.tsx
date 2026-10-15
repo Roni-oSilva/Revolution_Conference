@@ -7,6 +7,7 @@ import { parseIsoMs, type Phase } from '@/lib/phase';
 import { formatDays, formatShort, formatTimeH } from '@/lib/format';
 import { isSafeHttpsUrl, mapsEmbedUrl, mapsOpenUrl, youtubeEmbedUrl, youtubeWatchUrl } from '@/lib/urls';
 import { HeroVideo } from '../HeroVideo';
+import { VaporCountdown } from '../ui/countdown-vapor-digits';
 import { Logo } from '../Logo';
 import { PhaseGate } from '../PhaseGate';
 import { Gallery } from '../Gallery';
@@ -75,7 +76,8 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
             </div>
           </div>
           <aside className="hero-card" aria-label="Status do evento">
-            <span className="kicker">{variant === 'pre' ? 'Próximo encontro' : variant === 'open' ? 'Agora' : 'Obrigado'}</span>
+            <span className="kicker">{variant === 'pre' ? (opensAt ? 'Começa em' : 'Próximo encontro') : variant === 'open' ? 'Agora' : 'Obrigado'}</span>
+            {variant === 'pre' && opensAt != null && <VaporCountdown targetDate={opensAt} />}
             <p className="hc-big">{when || (variant === 'pre' ? 'Data a confirmar' : variant === 'open' ? (live ? 'Transmissão no ar' : 'Programação em andamento') : 'Até a próxima')}</p>
             {place && <p className="hc-sub">{place}</p>}
             {event.address && <p className="hc-sub muted">{event.address}</p>}
