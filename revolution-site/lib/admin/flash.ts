@@ -8,9 +8,9 @@ export const FLASH: Record<string, string> = {
   yt_unavailable: 'Salvo, mas o YouTube indica que o vídeo está privado, removido ou sem incorporação. Ele não aparece no site até ficar disponível.',
   check_unknown: 'Salvo, mas não foi possível verificar a disponibilidade agora (rede). Use “Verificar de novo”.',
   not_found_user: 'Nenhum usuário com este e-mail. Peça para a pessoa ser criada em Authentication → Users no Supabase.',
-  no_service: 'Esta ação precisa da SUPABASE_SERVICE_ROLE_KEY configurada no servidor.', bad_login: 'E-mail ou senha incorretos.', config: 'Supabase não configurado no servidor.',
+  no_service: 'Esta ação precisa da SUPABASE_SERVICE_ROLE_KEY configurada no servidor.', bad_login: 'Senha incorreta.', too_many: 'Muitas tentativas. Aguarde alguns minutos.', config: 'Defina ADMIN_PASSWORD no servidor para ligar o painel.',
   last_owner: 'Não é possível remover ou rebaixar o último owner.',
 };
 export const flashText = (code: string | undefined): string | null => (code ? FLASH[code] ?? null : null);
-export const isErrorCode = (code: string | undefined) => !!code && ['validation', 'invalid_url', 'folder', 'duplicate', 'forbidden', 'db', 'not_found_user', 'no_service', 'bad_login', 'config', 'last_owner'].includes(code);
+export const isErrorCode = (code: string | undefined) => !!code && ['validation', 'invalid_url', 'folder', 'duplicate', 'forbidden', 'db', 'not_found_user', 'no_service', 'bad_login', 'too_many', 'config', 'last_owner'].includes(code);
 export const isWarnCode = (code: string | undefined) => !!code && ['drive_unavailable', 'yt_unavailable', 'check_unknown'].includes(code);

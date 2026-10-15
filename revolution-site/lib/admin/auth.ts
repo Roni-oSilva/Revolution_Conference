@@ -1,19 +1,20 @@
 import 'server-only';
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import type { SupabaseClient, User } from '@supabase/supabase-js';
-import { createSessionClient } from '../supabase/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { createServiceClient } from '../supabase/service';
+import { ADMIN_COOKIE, verifyAdminToken } from './session';
 
-export interface AdminCtx { client: SupabaseClient; user: User; role: 'owner' | 'editor' }
+export interface AdminCtx { client: SupabaseClient; user: { email: string }; role: 'owner' }
 
-/** Autorização no SERVIDOR, a cada página e a cada ação:
- *  1) getUser() valida o JWT junto ao Auth (não confia só no cookie);
- *  2) is_admin() é avaliada no banco. Mesmo que isto fosse burlado, o RLS continua barrando as escritas. */
+/** Painel protegido por UMA senha (variável ADMIN_PASSWORD no servidor). Depois do login, o servidor grava no banco com a
+ *  chave de serviço (service_role). Sem ADMIN_PASSWORD o painel fica desligado. */
 export async function requireAdmin(): Promise<AdminCtx> {
-  const client = await createSessionClient();
-  if (!client) redirect('/admin/login?erro=config');
-  const { data, error } = await client.auth.getUser();
-  if (error || !data.user) redirect('/admin/login');
-  const [a, o] = await Promise.all([client.rpc('is_admin'), client.rpc('is_owner')]);
-  if (a.error || a.data !== true) redirect('/admin/negado');
-  return { client, user: data.user, role: o.data === true ? 'owner' : 'editor' };
+  const secret = process.env.ADMIN_PASSWORD ?? '';
+  if (!secret) redirect('/admin/login?m=config');
+  const token = (await cookies()).get(ADMIN_COOKIE)?.value;
+  if (!(await verifyAdminToken(secret, token))) redirect('/admin/login');
+  const client = createServiceClient();
+  if (!client) redirect('/admin/login?m=no_service');
+  return { client: client!, user: { email: 'Administrador' }, role: 'owner' };
 }

@@ -1,10 +1,11 @@
 'use server';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { createSessionClient } from '@/lib/supabase/server';
+import { cookies, headers } from 'next/headers';
+import { ADMIN_COOKIE, ADMIN_TTL_MS, createAdminToken, safeEqual } from '@/lib/admin/session';
 import { createServiceClient } from '@/lib/supabase/service';
 import { requireAdmin } from '@/lib/admin/auth';
-import { eventSchema, formToObject, inviteSchema, mediaEditSchema, mediaSchema, postSchema, scheduleSchema, securitySchema, siteSchema, streamSchema, videoEditSchema, videoSchema } from '@/lib/admin/schemas';
+import { eventSchema, formToObject, mediaEditSchema, mediaSchema, postSchema, scheduleSchema, securitySchema, siteSchema, streamSchema, videoEditSchema, videoSchema } from '@/lib/admin/schemas';
 import { parseDriveUrl, parseYouTube } from '@/lib/urls';
 import { checkDriveImage, checkYouTubeVideo, type Availability } from '@/lib/availability';
 import { zonedLocalToUtcMs } from '@/lib/tz';
@@ -18,19 +19,26 @@ const iso = (local: string | null | undefined, tz: string) => (local ? new Date(
 const availCode = (a: Availability, kind: 'drive' | 'yt', ok: string) => (a === 'unavailable' ? (kind === 'drive' ? 'drive_unavailable' : 'yt_unavailable') : a === 'unknown' ? 'check_unknown' : ok);
 
 // ───────────────────────── Sessão ─────────────────────────
+const attempts = new Map<string, { n: number; t: number }>();
 export async function loginAction(fd: FormData) {
-  const client = await createSessionClient();
-  if (!client) back('/admin/login', 'config');
-  const email = String(fd.get('email') ?? '').trim();
+  const secret = process.env.ADMIN_PASSWORD ?? '';
+  if (!secret) back('/admin/login', 'config');
+  // limite simples contra tentativa em massa: 8 erros por IP a cada 15 min
+  const h = await headers();
+  const ip = (h.get('x-forwarded-for') ?? 'x').split(',')[0].trim();
+  const now = Date.now(); const rec = attempts.get(ip);
+  if (rec && now - rec.t < 15 * 60e3 && rec.n >= 8) back('/admin/login', 'too_many');
   const password = String(fd.get('password') ?? '');
-  if (!email || !password || email.length > 254 || password.length > 200) back('/admin/login', 'bad_login');
-  const { error } = await client!.auth.signInWithPassword({ email, password });
-  if (error) { logger.warn('admin.login_failed'); back('/admin/login', 'bad_login'); }
+  if (!password || password.length > 200 || !safeEqual(password, secret)) {
+    attempts.set(ip, { n: rec && now - rec.t < 15 * 60e3 ? rec.n + 1 : 1, t: rec && now - rec.t < 15 * 60e3 ? rec.t : now });
+    logger.warn('admin.login_failed'); back('/admin/login', 'bad_login');
+  }
+  attempts.delete(ip);
+  (await cookies()).set(ADMIN_COOKIE, await createAdminToken(secret), { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', path: '/', maxAge: ADMIN_TTL_MS / 1000 });
   redirect('/admin');
 }
 export async function logoutAction() {
-  const client = await createSessionClient();
-  await client?.auth.signOut();
+  (await cookies()).delete(ADMIN_COOKIE);
   redirect('/admin/login');
 }
 
@@ -214,43 +222,6 @@ export async function deleteVideoAction(fd: FormData) {
   if (error) return back('/admin/midia', dbCode(error));
   refresh(); back('/admin/midia', 'deleted');
 }
-
-// ───────────────────────── Administradores (somente owner; o banco também exige) ─────────────────────────
-export async function inviteAdminAction(fd: FormData) {
-  const { client, role } = await requireAdmin();
-  if (role !== 'owner') return back('/admin/seguranca', 'forbidden');
-  const p = inviteSchema.safeParse(formToObject(fd));
-  if (!p.success) return back('/admin/seguranca', 'validation');
-  const svc = createServiceClient();
-  if (!svc) return back('/admin/seguranca', 'no_service');
-  // service_role é usada SÓ para localizar o usuário pelo e-mail; a escrita em admin_users usa a sessão do owner (RLS).
-  let userId: string | null = null;
-  for (let page = 1; page <= 10 && !userId; page++) {
-    const { data, error } = await svc.auth.admin.listUsers({ page, perPage: 200 });
-    if (error || !data) break;
-    userId = data.users.find((u) => u.email?.toLowerCase() === p.data.email.toLowerCase())?.id ?? null;
-    if (data.users.length < 200) break;
-  }
-  if (!userId) return back('/admin/seguranca', 'not_found_user');
-  const { error } = await client.from('admin_users').upsert({ user_id: userId, role: p.data.role });
-  if (error) return back('/admin/seguranca', dbCode(error));
-  logger.info('admin.invited', { role: p.data.role });
-  back('/admin/seguranca', 'saved');
-}
-export async function removeAdminAction(fd: FormData) {
-  const { client } = await requireAdmin();
-  const { error } = await client.from('admin_users').delete().eq('user_id', String(fd.get('user_id') ?? ''));
-  if (error) return back('/admin/seguranca', dbCode(error));
-  back('/admin/seguranca', 'deleted');
-}
-export async function setAdminRoleAction(fd: FormData) {
-  const { client } = await requireAdmin();
-  const role = fd.get('role') === 'owner' ? 'owner' : 'editor';
-  const { error } = await client.from('admin_users').update({ role }).eq('user_id', String(fd.get('user_id') ?? ''));
-  if (error) return back('/admin/seguranca', dbCode(error));
-  back('/admin/seguranca', 'saved');
-}
-
 
 // ───────────────────────── Programação dos dias ─────────────────────────
 export async function addScheduleAction(fd: FormData) {

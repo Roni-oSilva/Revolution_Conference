@@ -1,7 +1,7 @@
 // Testes E2E: Chromium real → app Next.js (produção) → PostgREST real → Postgres (PGlite) com as migrações e o RLS.
 // Auth e Realtime são SIMULADOS/ausentes (ver tests/e2e/infra.mjs e docs/TESTES.md).
 import { createRequire } from 'node:module';
-import { startInfra, USERS, ANON_KEY, SERVICE_KEY } from './infra.mjs';
+import { startInfra, USERS, ANON_KEY, SERVICE_KEY, ADMIN_PASS } from './infra.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -65,10 +65,9 @@ async function post(o = {}) {
   return r.rows[0].id;
 }
 const setOpen = (sql) => db.exec(`update public.event_settings set opens_at = ${sql}, starts_at = ${sql}`);
-async function login(page, user) {
+async function login(page, who) {
   await page.goto(`${base}/admin/login`);
-  await page.getByLabel('E-mail').fill(user.email);
-  await page.getByLabel('Senha').fill(user.password);
+  await page.getByLabel('Senha').fill(typeof who === 'string' ? who : ADMIN_PASS);
   await page.getByRole('button', { name: 'Entrar' }).click();
 }
 const loginOk = async (page, user) => { await login(page, user); await waitFor(() => new URL(page.url()).pathname === '/admin', 15000, 150, 'ir ao dashboard'); };
@@ -747,29 +746,23 @@ await test('galeria: mostra publicadas e não indisponíveis; imagem que falha v
 
 // ═════════════════════════ 9. Admin ═════════════════════════
 group('Painel administrativo');
-await test('rotas /admin: sem login redireciona; token falso não entra; usuário comum cai em "acesso negado"; admin entra', async () => {
+await test('rotas /admin: sem login redireciona; cookie forjado não entra; senha errada é recusada; senha certa entra', async () => {
   await reset();
   const page = await newPage();
-  for (const p of ['/admin', '/admin/mural', '/admin/midia', '/admin/evento', '/admin/seguranca', '/admin/preview', '/admin/preview/mural']) {
+  for (const p of ['/admin', '/admin/mural', '/admin/midia', '/admin/evento', '/admin/programacao', '/admin/seguranca', '/admin/preview', '/admin/preview/mural']) {
     await page.goto(base + p); await waitFor(() => new URL(page.url()).pathname === '/admin/login', 8000, 100, `redirecionar ${p}`);
   }
-  await page.getByLabel('E-mail').fill(USERS.owner.email); await page.getByLabel('Senha').fill('errada');
+  await page.getByLabel('Senha').fill('errada');
   await page.getByRole('button', { name: 'Entrar' }).click();
-  await page.getByText('E-mail ou senha incorretos.').waitFor();
-  // cookie forjado
-  await page.context().addCookies([{ name: 'sb-localhost-auth-token', value: 'forjado', url: base }]);
-  await page.goto(base + '/admin'); await waitFor(() => new URL(page.url()).pathname === '/admin/login');
+  await page.getByText('Senha incorreta.').waitFor();
+  // cookie forjado / expirado
+  for (const v of ['forjado', `${Date.now() + 1e9}.${'0'.repeat(64)}`, `1.${'0'.repeat(64)}`]) {
+    await page.context().addCookies([{ name: 'rv_admin', value: v, url: base }]);
+    await page.goto(base + '/admin'); await waitFor(() => new URL(page.url()).pathname === '/admin/login', 8000, 100, 'recusar cookie forjado');
+  }
   await done(page);
-
-  const plain = await newPage();
-  await login(plain, USERS.plain);
-  await waitFor(() => new URL(plain.url()).pathname === '/admin/negado', 15000, 150, 'acesso negado');
-  await plain.getByText('não tem permissão de administrador').waitFor();
-  for (const p of ['/admin', '/admin/mural', '/admin/preview/mural']) { await plain.goto(base + p); await waitFor(() => new URL(plain.url()).pathname === '/admin/negado', 8000, 100, `negar ${p}`); }
-  await done(plain);
-
   const adm = await newPage();
-  await loginOk(adm, USERS.owner);
+  await loginOk(adm);
   await adm.getByRole('heading', { name: 'Dashboard' }).waitFor();
   await done(adm);
 });
@@ -810,7 +803,7 @@ await test('CRUD do mural pelo painel: criar rascunho → pré-visualizar → pu
   await createForm.getByLabel('Título (opcional)').fill('Aviso importante');
   await createForm.getByLabel('Texto').fill('Cultos às 19h30.');
   await createForm.getByRole('button', { name: 'Criar publicação' }).click();
-  await page.getByText('Criado com sucesso.').waitFor();
+  await page.getByText('Criado com sucesso.').waitFor({ timeout: 10000 }).catch(async () => { throw new Error(`url=${page.url()} | ${(await page.locator('body').innerText()).slice(0, 300).replace(/\n/g, ' ')} | linhas=${(await db.query('select count(*) c from public.wall_posts')).rows[0].c} | problemas=${JSON.stringify(page.problems)}`); });
   const row = await db.query(`select id, status from public.wall_posts where title='Aviso importante'`);
   eq(row.rows.length, 1); eq(row.rows[0].status, 'draft');
   const id = row.rows[0].id;
@@ -827,7 +820,7 @@ await test('CRUD do mural pelo painel: criar rascunho → pré-visualizar → pu
   await page.locator(`[data-admin-post="${id}"] summary`, { hasText: 'Editar' }).click();
   await page.locator(`[data-admin-post="${id}"] form`).filter({ hasText: 'Salvar alterações' }).getByLabel('Texto').fill('Cultos às 20h.');
   await page.locator(`[data-admin-post="${id}"] form`).filter({ hasText: 'Salvar alterações' }).getByRole('button', { name: 'Salvar alterações' }).click();
-  await page.getByText('Salvo com sucesso.').waitFor();
+  await page.getByText('Salvo com sucesso.').waitFor({ timeout: 10000 }).catch(async () => { throw new Error(`url=${page.url()} | msgs=${await page.locator('.msg').allInnerTexts()} | ${(await db.query("select body from public.wall_posts")).rows.map((r) => r.body)}`); });
   await pub.reload(); await pub.getByText('Cultos às 20h.').waitFor();
   // ocultar / restaurar
   await page.locator(`[data-admin-post="${id}"]`).getByRole('button', { name: 'Ocultar' }).click(); await page.getByText('Publicação ocultada.').waitFor();
@@ -989,33 +982,14 @@ await test('pré-visualização: fases forçadas só no painel; o site público 
   await done(page); await done(pub);
 });
 
-await test('segurança: editor NÃO altera limites nem admins; owner altera e gerencia', async () => {
+await test('segurança: o painel altera os limites de reações', async () => {
   await reset();
-  const ed = await newPage(); await loginOk(ed, USERS.editor);
-  await ed.goto(`${base}/admin/seguranca`);
-  await ed.getByText('Somente owners gerenciam administradores.').waitFor();
-  eq(await ed.getByRole('button', { name: 'Adicionar administrador' }).count(), 0);
-  const f = ed.locator('form').filter({ hasText: 'Salvar limites' });
-  await f.getByLabel(/Limite por ID anônimo/).fill('250'); await f.getByRole('button', { name: 'Salvar limites' }).click();
-  await ed.locator('.msg.err').waitFor();
-  eq((await db.query(`select reaction_limit_per_minute from public.site_settings`)).rows[0].reaction_limit_per_minute, 20, 'banco recusou');
-  await done(ed);
-  const ow = await newPage(); await loginOk(ow, USERS.owner);
+  const ow = await newPage(); await loginOk(ow);
   await ow.goto(`${base}/admin/seguranca`);
   const g = ow.locator('form').filter({ hasText: 'Salvar limites' });
   await g.getByLabel(/Limite por ID anônimo/).fill('55'); await g.getByRole('button', { name: 'Salvar limites' }).click();
   await ow.getByText('Salvo com sucesso.').waitFor();
   eq((await db.query(`select reaction_limit_per_minute from public.site_settings`)).rows[0].reaction_limit_per_minute, 55);
-  // convidar admin (service_role só localiza o usuário; a escrita usa a sessão do owner)
-  const inv = ow.locator('form').filter({ hasText: 'Adicionar administrador' });
-  await inv.getByLabel(/E-mail de um usuário/).fill('ninguem@teste.dev'); await inv.getByRole('button', { name: 'Adicionar administrador' }).click();
-  await ow.getByText('Nenhum usuário com este e-mail.').waitFor();
-  await ow.goto(`${base}/admin/seguranca`);
-  const inv2 = ow.locator('form').filter({ hasText: 'Adicionar administrador' });
-  await inv2.getByLabel(/E-mail de um usuário/).fill(USERS.plain.email); await inv2.getByRole('button', { name: 'Adicionar administrador' }).click();
-  await ow.getByText('Salvo com sucesso.').waitFor();
-  eq((await db.query(`select role from public.admin_users where user_id=$1`, [USERS.plain.id])).rows[0].role, 'editor');
-  await db.exec(`delete from public.admin_users where user_id='${USERS.plain.id}'`);
   await done(ow);
 });
 
@@ -1059,15 +1033,6 @@ await test('Supabase fora → reação não é registrada e a UI avisa (sem trav
   control.down = false;
   await fireBtn(page, id).click();
   await waitFor(async () => (await cnt(page, id)) === 1 && (await dbCount(id, '🔥')) === 1, 8000);
-  await done(page);
-});
-
-await test('login do admin com Auth indisponível não derruba o painel', async () => {
-  control.authFail = true;
-  const page = await newPage();
-  await login(page, USERS.owner);
-  await page.getByText('E-mail ou senha incorretos.').waitFor({ timeout: 10000 });
-  control.authFail = false;
   await done(page);
 });
 

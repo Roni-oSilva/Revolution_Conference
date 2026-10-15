@@ -14,7 +14,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
     <div className="adm">
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <h1 style={{ margin: 0 }}>Painel</h1>
-        <form action={logoutAction} className="row"><span className="muted" style={{ fontSize: 13 }}>{user.email} · {role}</span><button className="btn small" type="submit">Sair</button></form>
+        <form action={logoutAction} className="row"><span className="muted" style={{ fontSize: 13 }}>{user.email}</span><button className="btn small" type="submit">Sair</button></form>
       </div>
       <nav className="adm-nav" aria-label="Painel">{NAV.map(([h, l]) => <Link key={h} href={h}>{l}</Link>)}</nav>
       {children}

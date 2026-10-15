@@ -27,6 +27,7 @@ export const verifyJwt = (tok) => {
   const c = JSON.parse(Buffer.from(p, 'base64url').toString());
   return c.exp && c.exp < Date.now() / 1000 ? null : c;
 };
+export const ADMIN_PASS = 'senha-de-teste-123';
 export const ANON_KEY = signJwt({ role: 'anon' }, 3600 * 24 * 365);
 export const SERVICE_KEY = signJwt({ role: 'service_role' }, 3600 * 24 * 365);
 
@@ -132,7 +133,7 @@ export async function startInfra({ chrome } = {}) {
   await new Promise((r) => api.listen(PORTS.api, '127.0.0.1', r));
 
   // app Next.js (produção)
-  const env = { ...process.env, NEXT_TELEMETRY_DISABLED: '1', NEXT_PUBLIC_SUPABASE_URL: `http://localhost:${PORTS.api}`, NEXT_PUBLIC_SUPABASE_ANON_KEY: ANON_KEY, NEXT_PUBLIC_SITE_URL: `http://localhost:${PORTS.app}`, SUPABASE_SERVICE_ROLE_KEY: SERVICE_KEY, RATE_LIMIT_SALT: 'sal-de-teste-sal-de-teste' };
+  const env = { ...process.env, NEXT_TELEMETRY_DISABLED: '1', NEXT_PUBLIC_SUPABASE_URL: `http://localhost:${PORTS.api}`, NEXT_PUBLIC_SUPABASE_ANON_KEY: ANON_KEY, NEXT_PUBLIC_SITE_URL: `http://localhost:${PORTS.app}`, SUPABASE_SERVICE_ROLE_KEY: SERVICE_KEY, RATE_LIMIT_SALT: 'sal-de-teste-sal-de-teste', ADMIN_PASSWORD: ADMIN_PASS };
   if (!process.env.SKIP_BUILD) execFileSync('npx', ['next', 'build'], { cwd: ROOT, env, stdio: process.env.DEBUG_E2E ? 'inherit' : 'ignore' });
   const app = spawn('npx', ['next', 'start', '-p', String(PORTS.app)], { cwd: ROOT, env });
   app.stdout.on('data', (d) => { if (process.env.DEBUG_E2E) process.stdout.write('[next] ' + d); });

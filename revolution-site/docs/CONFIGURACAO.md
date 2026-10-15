@@ -12,15 +12,10 @@ Siga na ordem. Nada aqui exige serviços pagos, mas **confira os limites atuais 
 4. **Project Settings → API**: copie *Project URL*, a chave **anon public** e a **service_role** (esta última é secreta).
 5. **Database → Replication** (ou *Realtime*): confirme que `post_reaction_counts` e `wall_posts` estão na publicação `supabase_realtime` (a migração 0004 faz isso). Sem isso as contagens ainda atualizam por consulta periódica (a cada 20 s), mas não instantaneamente.
 
-### Primeiro administrador
+### Acesso ao painel (senha única)
 
-1. *Authentication → Users → Add user* (e-mail + senha forte; marque “Auto Confirm User”).
-2. No **SQL Editor**:
-   ```sql
-   insert into public.admin_users (user_id, role)
-   select id, 'owner' from auth.users where email = 'SEU-EMAIL@exemplo.com';
-   ```
-3. Entre em `/admin/login`. Para outros admins, crie o usuário no Supabase e use *Painel → Segurança → Administradores* (somente `owner`). Funções: **owner** (conteúdo, admins e limites de segurança) e **editor** (conteúdo).
+O painel `/admin` abre com **uma única senha**, definida na variável de ambiente **`ADMIN_PASSWORD`** (Vercel → Settings → Environment Variables, ou `.env.local`). Não há e-mail nem conta de usuário. Sem `ADMIN_PASSWORD` o painel fica **desligado**.
+Depois do login o servidor grava no banco com a chave `SUPABASE_SERVICE_ROLE_KEY` (obrigatória). Para trocar a senha, mude a variável e faça novo deploy (os logins antigos deixam de valer).
 
 ## 2. Variáveis de ambiente
 

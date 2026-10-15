@@ -11,7 +11,7 @@ Site real, responsivo e seguro da Revolution Conference (Next.js 15 + TypeScript
 | **Início** (`/`) | Banner, caixa de **vídeo ao vivo** (link do YouTube definido no painel), informações do evento (fuso configurável, padrão `America/Sao_Paulo`), **troca automática** de fase pré-evento → pós-abertura → encerrado **sem recarregar**, destaques, galeria (fotos do Google Drive) e botões para AO VIVO e MURAL. |
 | **Ao Vivo** (`/ao-vivo`) | Player do YouTube (só quando o admin liga a transmissão; sem autoplay), mensagem quando não há live, vídeos gravados por categoria/ordem, links para o YouTube. |
 | **Mural** (`/mural`, `/mural/[id]`) | Publicações oficiais, reações anônimas com contagem (Realtime + atualização periódica de reserva), compartilhar por link, paginação, estados de carregamento/erro/vazio. |
-| **Painel** (`/admin`) | Login (Supabase Auth), dashboard real, evento/home, mural (criar, editar, ordenar, ocultar, restaurar, excluir), mídia (Drive e YouTube), segurança (limites, abusos, admins), pré-visualização antes de publicar. |
+| **Painel** (`/admin`) | Login por senha única (`ADMIN_PASSWORD`), dashboard real, evento/home, mural (criar, editar, ordenar, ocultar, restaurar, excluir), mídia (Drive e YouTube), segurança (limites, abusos, admins), pré-visualização antes de publicar. |
 | Extras | `/privacidade`, `robots.txt`, `sitemap.xml`, Open Graph, CSP com nonce, cabeçalhos de segurança. |
 
 ## Estrutura
@@ -53,7 +53,7 @@ npm run dev                     # http://localhost:3000
 
 ## Documentação
 
-- [Configuração (Supabase, primeiro admin, variáveis, Drive, YouTube)](docs/CONFIGURACAO.md)
+- [Configuração (Supabase, senha do painel, variáveis, Drive, YouTube)](docs/CONFIGURACAO.md)
 - [Publicação e atualização na Vercel](docs/PUBLICACAO.md)
 - [Segurança, reações anônimas e limitações](docs/SEGURANCA.md)
 - [Testes: o que é real e o que é simulado](docs/TESTES.md)

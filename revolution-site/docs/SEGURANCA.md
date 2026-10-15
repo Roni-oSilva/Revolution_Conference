@@ -4,10 +4,10 @@
 | Quem | Pode |
 |---|---|
 | Visitante (anônimo) | **Ler** conteúdo publicado; **reagir** (por rota de servidor); abrir links oficiais. Nada mais. |
-| `editor` | CRUD de conteúdo (mural, mídia, vídeos, evento/home). |
-| `owner` | Tudo do editor + administradores + limites de segurança. |
+| Quem sabe a senha do painel | Tudo no `/admin`: conteúdo, programação, mídia, evento/home e limites das reações. |
 
-Autorização **no servidor e no banco**: cada página/ação do painel chama `requireAdmin()` (valida o JWT no Auth e `is_admin()` no banco); as consultas usam a sessão do usuário, então o **RLS** é a barreira final — mesmo uma ação mal escrita não escreve sem permissão. Esconder botões é só conforto.
+**Painel com senha única (decisão do projeto: simples, sem contas).** A senha vem de `ADMIN_PASSWORD` (nunca vai para o código nem para o GitHub). O login grava um cookie `httpOnly` assinado (HMAC) que vale 12 h; cada página/ação do painel confere o cookie no servidor e depois escreve no banco com a `service_role` (que ignora o RLS). Há limite de 8 tentativas erradas por IP a cada 15 min.
+Limitações assumidas: uma senha compartilhada não identifica quem fez cada mudança, e uma senha numérica curta é fácil de adivinhar com tentativas em massa vindas de vários IPs. Use uma senha longa se o conteúdo for sensível.
 
 ## Banco (RLS)
 - RLS ligado em **todas** as tabelas; privilégios revogados e concedidos só ao necessário.
@@ -16,8 +16,7 @@ Autorização **no servidor e no banco**: cada página/ação do painel chama `r
 - `post_reactions`: só admin lê; ninguém escreve direto.
 - `rate_limits`: sem acesso para `anon`/`authenticated`.
 - `react_to_post` e `my_reactions`: **só `service_role`** pode executar.
-- Campos de segurança (`reaction_limit_*`, `reactions_enabled`): trigger exige `owner` via API.
-- Último `owner` não pode ser removido/rebaixado.
+- Campos de segurança (`reaction_limit_*`, `reactions_enabled`): pela API pública só o `owner` do banco altera (o painel usa a `service_role`).
 - Constraints: URLs `https`, domínios do Drive/YouTube, IDs, tamanhos, unicidade (`drive_file_id`, `youtube_id`).
 
 ## Reações anônimas (e por que não garantem “uma por pessoa”)
