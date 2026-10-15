@@ -9,9 +9,4 @@ insert into public.schedule_items (day_label, time_label, title, position, is_pu
   ('Sábado, 17/10/2026', '20h10', 'Louvor', 4, true),
   ('Sábado, 17/10/2026', '20h30', 'Ministração', 5, true),
   ('Sábado, 17/10/2026', '21h20', 'Encerramento', 6, true),
-  ('Domingo, 18/10/2026', '07h30', 'Café da manhã pronto', 7, true),
-  ('Domingo, 18/10/2026', '08h30', 'Chegada', 8, true),
-  ('Domingo, 18/10/2026', '09h00', 'Louvor', 9, true),
-  ('Domingo, 18/10/2026', '09h30', '1ª sessão — ministração', 10, true),
-  ('Domingo, 18/10/2026', '10h10', '2ª sessão — louvor', 11, true),
-  ('Domingo, 18/10/2026', '10h25', 'Ministração', 12, true);
+  ('Domingo, 18/10/2026', '07h30', 'Café da manhã', 7, true);
