@@ -385,3 +385,4 @@ main > * { animation: fade .7s var(--e) both; }
 .foot-credit { max-width: var(--max); margin: 22px auto 0; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
 .foot-credit a { color: #fff; font-weight: 700; border-bottom: 1px solid var(--red-hi); text-decoration: none; }
 .foot-credit a:hover { color: var(--red-hi); }
+main { overflow-x: clip; }
