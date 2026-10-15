@@ -27,6 +27,8 @@ function buildCsp(nonce: string): string {
 }
 
 export async function middleware(request: NextRequest) {
+  // pré-carregamentos de links (prefetch) não precisam de CSP/nonce nem de checagens
+  if (request.headers.has('next-router-prefetch') || request.headers.get('purpose') === 'prefetch') return NextResponse.next();
   const nonce = btoa(crypto.randomUUID());
   const csp = buildCsp(nonce);
   const requestHeaders = new Headers(request.headers);
@@ -56,5 +58,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [{ source: '/((?!_next/static|_next/image|favicon.ico|fonts/|icon.svg).*)', missing: [{ type: 'header', key: 'next-router-prefetch' }, { type: 'header', key: 'purpose', value: 'prefetch' }] }],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|fonts/|icon.svg|icon.png|logo|hero).*)'],
 };
