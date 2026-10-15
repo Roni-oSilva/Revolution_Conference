@@ -6,6 +6,7 @@ import { slugify } from '@/lib/slug';
 import { parseIsoMs, type Phase } from '@/lib/phase';
 import { formatDays, formatShort, formatTimeH } from '@/lib/format';
 import { isSafeHttpsUrl, mapsEmbedUrl, mapsOpenUrl, youtubeEmbedUrl, youtubeWatchUrl } from '@/lib/urls';
+import { HeroVideo } from '../HeroVideo';
 import { Logo } from '../Logo';
 import { PhaseGate } from '../PhaseGate';
 import { Gallery } from '../Gallery';
@@ -59,13 +60,9 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
     const when = event.starts_at ? formatShort(event.starts_at, event.timezone) : '';
     const place = event.location_name || '';
     return (
-      <section className="hero big" aria-labelledby="home-title">
-        <div className="hero-bg" aria-hidden="true" />
-        <span className="orb o1" aria-hidden="true" /><span className="orb o2" aria-hidden="true" /><span className="orb o3" aria-hidden="true" />
-        {site.hero_image_url && isSafeHttpsUrl(site.hero_image_url) && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <div className="hero-img" aria-hidden="true"><img src={site.hero_image_url} alt="" fetchPriority="high" referrerPolicy="no-referrer" /></div>
-        )}
+      <section className="hero big hv" aria-labelledby="home-title">
+        <div className="hv-stage">
+        <HeroVideo />
         <div className="hero-in hero-grid">
           <div className="hero-main">
             <Logo size="xl" />
@@ -84,6 +81,7 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
             {event.address && <p className="hc-sub muted">{event.address}</p>}
             {variant === 'open' && live && <span className="badge live">● Ao vivo</span>}
           </aside>
+        </div>
         </div>
       </section>
     );

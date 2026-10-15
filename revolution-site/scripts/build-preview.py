@@ -19,6 +19,8 @@ import subprocess
 motion = subprocess.run(['node_modules/.bin/esbuild', 'lib/motion.ts', '--bundle', '--format=iife', '--global-name=RVMotion', '--minify'], capture_output=True, text=True, check=True).stdout
 motion += ';RVMotion.initMotion();'
 html = html.replace('/*MOTIONJS*/', motion.replace('</script', '<\\/script'))
+hero = subprocess.run(['node_modules/.bin/esbuild', 'lib/herovideo.ts', '--bundle', '--format=iife', '--global-name=RVHero', '--minify'], capture_output=True, text=True, check=True).stdout
+html = html.replace('/*HEROJS*/', hero).replace('/*VIDEOB64*/', b64('scripts/hero-preview.mp4')).replace('/*POSTER*/', 'data:image/jpeg;base64,' + b64('public/hero-poster.jpg'))
 html = html.replace('/*FONTS*/', fonts).replace('/*APPCSS*/', css)
 html = html.replace('/*INTROJS*/', open('scripts/preview-intro.js').read())
 open(sys.argv[1], 'w', encoding='utf8').write(html)

@@ -27,8 +27,8 @@ html.lock { overflow: hidden; }
 
 <!-- ═════════ INÍCIO ═════════ -->
 <div data-view="inicio">
-  <section class="hero big" aria-labelledby="home-title">
-    <div class="hero-bg" aria-hidden="true"></div><span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span>
+  <section class="hero big hv" aria-labelledby="home-title"><div class="hv-stage">
+    <div class="hv-media" aria-hidden="true"><video class="hv-scrub" muted playsinline preload="auto" poster="/*POSTER*/"></video><video class="hv-side" muted loop playsinline autoplay preload="auto"></video><div class="hv-scrim"></div><div class="hv-hint">Role</div></div>
     <div class="hero-in hero-grid">
       <div class="hero-main">
         <img class="logo logo-xl" src="/*LOGO_XL*/" alt="Revolução Jovem Teen"><span class="kicker">Em breve</span>
@@ -38,7 +38,7 @@ html.lock { overflow: hidden; }
       </div>
       <aside class="hero-card" aria-label="Status do evento"><span class="kicker">Próximo encontro</span><p class="hc-big" id="hcw">Data definida no painel</p><p class="hc-sub">Local definido no painel</p><p class="hc-sub muted">Endereço aparece aqui</p></aside>
     </div>
-  </section>
+  </div></section>
   <div class="wrap">
     <section class="livebox glass" aria-labelledby="lb-title"><div class="lb-head"><h2 id="lb-title" class="section-title" style="margin:0">Vídeo ao vivo</h2><span class="badge">Aguardando</span></div>
       <div class="player lb-empty"><div><strong>A transmissão aparecerá aqui</strong><span>Quando o AO VIVO começar, o vídeo do YouTube é exibido nesta caixa.</span><a class="link-btn" href="https://www.youtube.com/@evangelhoplenoulianopolis" target="_blank" rel="noopener noreferrer">Ir ao canal no YouTube ↗</a></div></div></section>
@@ -131,4 +131,7 @@ posts.forEach(function (p, pi) {
 </script>
 <div class="progress" aria-hidden="true"></div>
 <script>/*MOTIONJS*/</script>
+<script>/*HEROJS*/
+(function(){var bin=atob("/*VIDEOB64*/"),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);var url=URL.createObjectURL(new Blob([u],{type:"video/mp4"}));
+var sec=document.querySelector(".hero.hv"),a=sec.querySelector(".hv-scrub"),b=sec.querySelector(".hv-side");a.src=url;b.src=url;RVHero.initHeroScrub(sec,a,b);})();</script>
 </body></html>
