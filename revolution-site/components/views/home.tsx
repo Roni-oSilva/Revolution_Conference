@@ -1,16 +1,14 @@
 import Link from 'next/link';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { getGallery, getHighlights, getSchedule, getSettings, getVideos } from '@/lib/data';
-import { Folder, type FolderItem } from '../Folders';
-import { slugify } from '@/lib/slug';
+import { getHighlights, getSchedule, getSettings } from '@/lib/data';
 import { parseIsoMs, type Phase } from '@/lib/phase';
 import { formatDays, formatShort, formatTimeH } from '@/lib/format';
 import { isSafeHttpsUrl, mapsEmbedUrl, mapsOpenUrl, youtubeEmbedUrl, youtubeWatchUrl } from '@/lib/urls';
+import { REGISTRATION_URL } from '@/lib/links';
 import { HeroVideo } from '../HeroVideo';
 import { VaporCountdown } from '../ui/countdown-vapor-digits';
 import { Logo } from '../Logo';
 import { PhaseGate } from '../PhaseGate';
-import { Gallery } from '../Gallery';
 import { StateBox } from '../States';
 import type { EventSettings } from '@/lib/types';
 
@@ -47,7 +45,7 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
   const s = await getSettings(client);
   if (!s.ok) return <div className="wrap"><StateBox title="Não foi possível carregar o site" kind="error"><p>Tente novamente em instantes.</p></StateBox></div>;
   const { site, event } = s.data;
-  const [g, h, vids, sch] = await Promise.all([getGallery(client, preview, 60), getHighlights(client, preview), getVideos(client, preview), getSchedule(client, preview)]);
+  const [h, sch] = await Promise.all([getHighlights(client, preview), getSchedule(client, preview)]);
   const days = new Map<string, NonNullable<typeof sch.data>>();
   for (const it of sch.data ?? []) (days.get(it.day_label) ?? days.set(it.day_label, []).get(it.day_label)!).push(it);
   const serverNow = Date.now();
@@ -72,7 +70,8 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
             {site.tagline && <p className="lead">{site.tagline}</p>}
             <div className="btn-row">
               <Link className={`btn ${variant === 'open' && live ? 'solid' : ''}`} href={liveHref}>{variant === 'open' && live ? 'Assistir ao vivo' : 'Ao vivo'}</Link>
-              <Link className="btn solid" href={wallHref}>Ver o mural</Link>
+              <Link className="btn" href={wallHref}>Ver o mural</Link>
+              {variant !== 'ended' && <a className="btn solid" href={REGISTRATION_URL} target="_blank" rel="noopener noreferrer">Ainda não fez a inscrição? <span aria-hidden="true">↗</span></a>}
             </div>
           </div>
           <aside className="hero-card" aria-label="Status do evento">
@@ -89,19 +88,6 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
     );
   };
 
-  const gallery = (g.data ?? []).map((m) => ({ id: m.id, fileId: m.drive_file_id, alt: m.alt || m.title, caption: m.caption || m.title, featured: m.is_featured, album: m.album }));
-  const liveBase = preview ? '/admin/preview/ao-vivo' : '/ao-vivo';
-  const cats = new Map<string, number>();
-  for (const v of vids.data ?? []) cats.set(v.category, (cats.get(v.category) ?? 0) + 1);
-  const videoItems: FolderItem[] = [...cats.entries()].sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0], 'pt-BR')).slice(0, 2).map(([c, n]) => ({ label: c, hint: `${n} vídeo${n > 1 ? 's' : ''}`, href: `${liveBase}#${slugify(c)}` }));
-  videoItems.push({ label: 'Ao vivo', hint: 'YouTube', href: liveBase });
-  const albumCount = new Map<string, number>();
-  for (const m of gallery) if (m.album) albumCount.set(m.album, (albumCount.get(m.album) ?? 0) + 1);
-  const homeBase = preview ? '/admin/preview/inicio' : '/';
-  const photoItems: FolderItem[] = [...albumCount.entries()].sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0], 'pt-BR')).slice(0, 2).map(([a, n]) => ({ label: a, hint: `${n} foto${n > 1 ? 's' : ''}`, href: `${homeBase}?album=${encodeURIComponent(a)}#galeria` }));
-  photoItems.push({ label: 'Galeria completa', hint: 'Drive', href: '#galeria' });
-  const nVideos = (vids.data ?? []).length;
-  const plural = (n: number) => `${n} ${n === 1 ? 'item' : 'itens'}`;
   const hl = h.data ?? [];
 
   return (
@@ -161,16 +147,10 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
             </div>
           </section>
         )}
-        <section aria-labelledby="pastas" className="glow-section" style={{ marginTop: 64 }}>
-          <div className="folders-head"><span className="kicker">Dois dias</span><h2 id="pastas" className="section-title" style={{ marginTop: 12 }}>Reviva cada momento</h2><p>Vídeos e fotos oficiais, reunidos em duas pastas.</p></div>
-          <div className="fs">
-            <Folder kind="v" title="Vídeos" count={plural(nVideos)} items={videoItems} />
-            <Folder kind="f" title="Fotos" count={plural(gallery.length)} items={photoItems} />
-          </div>
-        </section>
-        <section id="galeria" aria-labelledby="gal" style={{ marginTop: 40, scrollMarginTop: 90 }}>
-          <h2 id="gal" className="section-title">Galeria</h2>
-          {!g.ok ? <StateBox title="Não foi possível carregar a galeria" kind="error" /> : gallery.length > 0 ? <Gallery items={gallery} initialAlbum={album} /> : <StateBox title="Fotos em breve">As fotos oficiais aparecerão aqui.</StateBox>}
+        <section aria-labelledby="momentos" style={{ marginTop: 64 }}>
+          <span className="kicker">Fotos e vídeos</span>
+          <h2 id="momentos" className="section-title">Reviva cada momento</h2>
+          <StateBox title="Indisponível no momento">As fotos e os vídeos serão liberados em breve.</StateBox>
         </section>
       </div>
     </>

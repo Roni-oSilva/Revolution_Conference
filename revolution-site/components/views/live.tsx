@@ -39,14 +39,7 @@ export async function LiveView({ client, preview = false }: ViewOpts) {
       )}
       <section aria-labelledby="gravados" style={{ marginTop: 56 }}>
         <h2 id="gravados" className="section-title">Vídeos gravados</h2>
-        {!v.ok ? <StateBox title="Não foi possível carregar os vídeos" kind="error"><p>Tente novamente em instantes.</p></StateBox>
-          : videos.length === 0 ? <StateBox title="Ainda não há vídeos">As gravações aparecerão aqui.</StateBox>
-          : [...byCat.entries()].map(([cat, list]) => (
-            <div key={cat}>
-              <h3 className="cat" id={slugify(cat)} style={{ scrollMarginTop: 90 }}>{cat}</h3>
-              <div className="vgrid">{list.map((x) => <VideoCard key={x.id} id={x.id} youtubeId={x.youtube_id} title={x.title} description={x.description} category={x.category} />)}</div>
-            </div>
-          ))}
+        <StateBox title="Indisponível no momento">As gravações serão liberadas em breve.</StateBox>
       </section>
     </div>
   );

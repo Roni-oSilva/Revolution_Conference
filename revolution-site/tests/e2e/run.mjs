@@ -113,8 +113,8 @@ await test('cabeçalhos de segurança: CSP com nonce, sem iframe externo, nosnif
 
 await test('estados vazios: início, ao vivo e mural', async () => {
   const page = await newPage();
-  await page.goto(base); await page.getByText('Fotos em breve').waitFor();
-  await page.goto(`${base}/ao-vivo`); await page.getByText('Nenhuma transmissão no momento').waitFor(); await page.getByText('Ainda não há vídeos').waitFor();
+  await page.goto(base); await page.getByText('Indisponível no momento').first().waitFor();
+  await page.goto(`${base}/ao-vivo`); await page.getByText('Nenhuma transmissão no momento').waitFor(); await page.getByText('Indisponível no momento').first().waitFor();
   await page.goto(`${base}/mural`); await page.getByText('O mural ainda está vazio').waitFor();
   eq(await page.locator('iframe').count(), 0);
   await done(page);

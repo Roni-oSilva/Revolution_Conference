@@ -11,5 +11,6 @@ update public.event_settings set
 where id = 1;
 
 update public.site_settings set
+  instagram_url       = 'https://www.instagram.com/revolucaojovemiep/',
   youtube_channel_url = 'https://www.youtube.com/@evangelhoplenoulianopolis'
 where id = 1;

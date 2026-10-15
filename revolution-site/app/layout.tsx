@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import Link from 'next/link';
 import './globals.css';
+import { CARVEX_URL, INSTAGRAM_URL } from '@/lib/links';
 import { Motion } from '@/components/Motion';
 import { Logo } from '@/components/Logo';
 import { NavTabs } from '@/components/NavTabs';
@@ -16,6 +17,9 @@ const body = localFont({
   src: [{ path: '../public/fonts/jakarta-300.woff2', weight: '300' }, { path: '../public/fonts/jakarta-400.woff2', weight: '400' }, { path: '../public/fonts/jakarta-600.woff2', weight: '600' }],
   variable: '--font-body', display: 'swap',
 });
+
+const INSTAGRAM = INSTAGRAM_URL;
+const CARVEX = CARVEX_URL;
 
 export const dynamic = 'force-dynamic';
 
@@ -43,7 +47,7 @@ export const viewport: Viewport = { themeColor: '#0a0a0a', width: 'device-width'
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await loadSite();
   const social = [
-    ['Instagram', site?.instagram_url], ['YouTube', site?.youtube_channel_url], ['WhatsApp', site?.whatsapp_url],
+    ['Instagram', site?.instagram_url || INSTAGRAM], ['YouTube', site?.youtube_channel_url], ['WhatsApp', site?.whatsapp_url],
   ].filter((x): x is [string, string] => !!x[1] && isSafeHttpsUrl(x[1]));
   return (
     <html lang="pt-BR" className={`${title.variable} ${body.variable}`}>
@@ -59,6 +63,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <main id="conteudo" tabIndex={-1}>{children}</main>
         <footer className="foot">
           <div className="foot-logo"><Logo size="xl" /></div>
+          <div className="foot-follow">
+            <a className="btn solid" href={site?.instagram_url || INSTAGRAM} target="_blank" rel="noopener noreferrer">Siga @revolucaojovemiep no Instagram <span aria-hidden="true">↗</span></a>
+          </div>
           <div className="foot-in">
             <span>© {new Date().getFullYear()} {site?.site_title || 'Revolution Conference'}</span>
             <span style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
@@ -66,6 +73,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Link href="/privacidade">Política de privacidade</Link>
             </span>
           </div>
+          <p className="foot-credit">Desenvolvido por <a href={CARVEX} target="_blank" rel="noopener noreferrer">@carvex_lab</a> • Obrigado por dar vida a essa visão.</p>
         </footer>
       </body>
     </html>
