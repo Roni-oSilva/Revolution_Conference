@@ -10,7 +10,13 @@ import { VaporCountdown } from '../ui/countdown-vapor-digits';
 import { Logo } from '../Logo';
 import { PhaseGate } from '../PhaseGate';
 import { StateBox } from '../States';
+import { DayGallery, type DayPhoto } from '../DayGallery';
 import type { EventSettings } from '@/lib/types';
+
+const DIA1: DayPhoto[] = Array.from({ length: 16 }, (_, i) => {
+  const n = String(i + 1).padStart(2, '0');
+  return { src: `/galeria/dia1/${n}.jpg`, thumb: `/galeria/dia1/t${n}.jpg`, alt: `Revolution Conference — primeiro dia, foto ${i + 1}` };
+});
 
 interface ViewOpts { client: SupabaseClient; preview?: boolean; forcePhase?: Phase; album?: string }
 const streamReady = (e: EventSettings) => e.stream_enabled && !!e.stream_video_id;
@@ -150,7 +156,9 @@ export async function HomeView({ client, preview = false, forcePhase, album = ''
         <section aria-labelledby="momentos" style={{ marginTop: 64 }}>
           <span className="kicker">Fotos e vídeos</span>
           <h2 id="momentos" className="section-title">Reviva cada momento</h2>
-          <StateBox title="Indisponível no momento">As fotos e os vídeos serão liberados em breve.</StateBox>
+          <h3 className="section-title" style={{ fontSize: 'clamp(20px, 2.6vw, 28px)', margin: '8px 0 16px' }}>Primeiro dia</h3>
+          <DayGallery photos={DIA1} />
+          <div style={{ marginTop: 20 }}><StateBox title="Vídeos indisponíveis no momento">Os vídeos serão liberados em breve.</StateBox></div>
         </section>
       </div>
     </>

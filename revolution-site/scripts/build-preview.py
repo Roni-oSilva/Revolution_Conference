@@ -23,6 +23,10 @@ hero = subprocess.run(['node_modules/.bin/esbuild', 'lib/herovideo.ts', '--bundl
 html = html.replace('/*HEROJS*/', hero).replace('/*VIDEOB64*/', b64('scripts/hero-preview.mp4')).replace('/*POSTER*/', 'data:image/jpeg;base64,' + b64('public/hero-poster.jpg'))
 vc = subprocess.run(['node_modules/.bin/esbuild', 'scripts/preview-countdown.tsx', '--bundle', '--format=iife', '--minify', '--jsx=automatic', '--define:process.env.NODE_ENV="production"'], capture_output=True, text=True, check=True).stdout
 html = html.replace('/*VCJS*/', vc.replace('</script', '<\\/script'))
+G = 'public/galeria/dia1/'
+gh = ''.join(f'<li style="display:contents"><button type="button" class="g" aria-label="Ampliar foto {n}"><img src="data:image/jpeg;base64,{b64(G + "t%02d.jpg" % n)}" alt="Revolution Conference — primeiro dia, foto {n}" loading="lazy"></button></li>' for n in range(1, 17))
+gj = '[' + ','.join('"data:image/jpeg;base64,' + b64(G + '%02d.jpg' % n) + '"' for n in range(1, 17)) + ']'
+html = html.replace('/*GALHTML*/', gh).replace('/*GALJS*/', gj)
 html = html.replace('/*FONTS*/', fonts).replace('/*APPCSS*/', css)
 html = html.replace('/*INTROJS*/', open('scripts/preview-intro.js').read())
 open(sys.argv[1], 'w', encoding='utf8').write(html)

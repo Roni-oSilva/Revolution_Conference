@@ -50,7 +50,10 @@ html.lock { overflow: hidden; }
           <dl class="where-meta"><div><dt>Data</dt><dd>17 · 18 out</dd></div><div><dt>Horário</dt><dd>19h30</dd></div></dl>
           <a class="btn solid where-btn" href="https://maps.app.goo.gl/hMozkG8gsnRN1rEt5" target="_blank" rel="noopener noreferrer">Abrir no mapa <span aria-hidden="true">→</span></a></div></div></section>
     <section style="margin-top:64px"><span class="kicker">Fotos e vídeos</span><h2 class="section-title">Reviva cada momento</h2>
-      <div class="state"><strong>Indisponível no momento</strong>As fotos e os vídeos serão liberados em breve.</div></section>
+      <h3 class="section-title" style="font-size:clamp(20px,2.6vw,28px);margin:8px 0 16px">Primeiro dia</h3>
+      <ul class="gallery" id="dia1" style="list-style:none;padding:0;margin:0">/*GALHTML*/</ul>
+      <dialog class="dlg" id="gdlg" aria-label="Foto ampliada"><div class="dlg-in"><button type="button" class="dlg-close" aria-label="Fechar" id="gx">×</button><img id="gimg" alt="Foto ampliada"><div class="row" style="justify-content:space-between"><button type="button" class="btn small" id="gp" aria-label="Foto anterior">←</button><span class="muted" id="gc"></span><button type="button" class="btn small" id="gn" aria-label="Próxima foto">→</button></div></div></dialog>
+      <div style="margin-top:20px"><div class="state"><strong>Vídeos indisponíveis no momento</strong>Os vídeos serão liberados em breve.</div></div></section>
   </div>
 </div>
 
@@ -112,6 +115,11 @@ posts.forEach(function (p, pi) {
 /*INTROJS*/
 </script>
 <div class="progress" aria-hidden="true"></div>
+<script>(function(){var F=/*GALJS*/;var d=document.getElementById("gdlg"),im=document.getElementById("gimg"),c=document.getElementById("gc"),i=0;
+function show(n){i=(n+F.length)%F.length;im.src=F[i];c.textContent=(i+1)+" / "+F.length}
+document.querySelectorAll("#dia1 button").forEach(function(b,n){b.addEventListener("click",function(){show(n);d.showModal()})});
+document.getElementById("gx").onclick=function(){d.close()};document.getElementById("gp").onclick=function(){show(i-1)};document.getElementById("gn").onclick=function(){show(i+1)};
+d.addEventListener("click",function(e){if(e.target===d)d.close()});d.addEventListener("keydown",function(e){if(e.key==="ArrowRight")show(i+1);if(e.key==="ArrowLeft")show(i-1)})})();</script>
 <script>/*MOTIONJS*/</script>
 <script>/*HEROJS*/
 (function(){var bin=atob("/*VIDEOB64*/"),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);var url=URL.createObjectURL(new Blob([u],{type:"video/mp4"}));
